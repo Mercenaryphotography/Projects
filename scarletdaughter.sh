@@ -12,11 +12,18 @@ Gld='\033[0;93m'
 Std='\033[0m'
 
 # Graphic setup, makes a tempfolder downloads the files then points to files for the game to use.
-echo "Acquiring image assets"
-echo $titleurl
+
 titleurl="https://raw.github.com/Mercenaryphotography/Projects/master/Gametitle.txt"
 menuurl="https://raw.github.com/Mercenaryphotography/Projects/master/menu.txt"
 file_contents=$(wget -qO- "$titleurl")
+menuget=$(wget -q0- "$menuurl")
+echo "Acquiring image assets"
+echo $titleurl
+echo $menuurl
+sleep 3
+echo "Complete"
+sleep 1
+clear
 echo "$file_contents"
 
 
@@ -117,12 +124,12 @@ explore() {
 	#*)
 	#	echo "You get lost and end up back at camp"
 	#;;
-	#esac
+	#esacmenuget
 	}
 			
 while [ $Player_Health -gt 0 ]; do
 
-	cat menu.txt
+	echo "$menuget"
 	echo
 	read -p "Choose an action: " action
 		case $action in
