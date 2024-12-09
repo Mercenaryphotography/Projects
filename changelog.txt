@@ -3,3 +3,8 @@ Starting a change log for ye olde github
 
 Changed the weapon select to also set the players class and starting stats.
 
+Change magic in the combat menu to ability, added Warrior Lifesteal attack
+
+Sleep Timer
+
+playerstate source was created to keep the code clean, Ideally I only want the main engine loop to exist in scarletdaughter.sh and most other functions being offloaded into sourced txt files.

@@ -4,18 +4,12 @@ clear
 
 source ./config.txt
 
-echo "Acquiring image assets"
-echo "$titleurl"
-echo "$menuurl"
-sleep 3
-echo "Complete"
-sleep 1
-clear
-echo "$titleget"
+cat Gametitle.txt | while IFS= read -r line; do echo -e "$line" ; done
 
 # Get character name and weapon
 read -p "What is your name Adventurer? (This will set your character name!) " name
 cat $menu1
+echo
 read -p "What is your weapon of choice? " choice
 echo " "
 while true; do
@@ -28,28 +22,8 @@ while true; do
 	done
 clear
 
-# Starting Stats
-Player_Health=100
-Player_MaxHealth=100 #Used for healing to full health
-Player_exp=0 #Level ups increase base states depending on the level achieved.
-Player_Strength=15	#Strength adds to the damage of your weapon
-Player_Defense=10	#Defense subtracts from the enemey damage
-Player_Luck=2		#Luck determines chance to run away
-statusp=false       #Is the player Poisened?
-potion=false		#Does the player have a potion on them (can only hold 1)
-if [ $class_weapon = "Sword" ] ; then
-min_dmg=3
-max_dmg=5
-elif [$class_weapon = "Staff" ] ; then
-min_dmg=1
-max_dmg=3
-elif [$class_weapon = "Dagger" ] ; then
-min_dmg=2
-max_dmg=4
-fi
-
-1=$(min_dmg)
-2=$(max_dmg)
+#loads the Playerstate file and all Variables associated with the player themselves
+source ./playerstate,txt
 
 # Monster Stats - I want to do an array style system where each zone can pull from 1 of 10 battles, and when it pulls the monster it randomly assigs their stats. 
 Amon_Health=20
@@ -64,15 +38,23 @@ Monster_Strength=$Amon_Strength
 
 # Base attack function for player
 get_damage_user() {
-    damage=$((RANDOM % ( ($2 - $1 + 1) ) + $1 + Player_Strength))
+    damage=$((RANDOM % ( ($max_dmg - $min_dmg + 1) ) + Player_Strength))
 	Monster_Health=$((Monster_Health - $damage))
 	echo Orc takes $damage damage
 	sleep 2
 }
-
+# Warriors lifegain attack
+lifesteal() {
+lfslcost=$(( 8 * Player_lvl ))
+Player_Health=$(( $Player_Health - $lfslcost ))
+damge=$((RANDOM % ( ($max_dmg - $min_dmg ) ) + 10 + Player_Strength))
+lfsldmg=$(echo "($damage /100) + 0.5) | bc ")
+Monster_Health=$((Monster_Health -$damage))
+Player_Health=$(( $Player_health + $lfsldmg ))
+}
 # Monster attack
 get_damage_mon() {
-    damage=$((RANDOM % ($a2 - $a1 + $Monster_Strength) + $a1))
+    damage=$((RANDOM % ($a2 - $a1 + $Monster_Strength) ))
 	Player_Health=$((Player_Health - $damage))
 	echo You take $damage damage
 	sleep 2
@@ -95,9 +77,9 @@ monsterimg() {
     count=0
 # Cat the ascii art, pipe that into a loop that reads each line and inputs it one line at a time into a variable called line, then we
 # Echo -e $line to display the txt files with their ansi codes inbedded
-f1="/home/keagan/Bin/Game/Masset/o1.txt"
-f2="/home/keagan/Bin/Game/Masset/o2.txt"
-f3="/home/keagan/Bin/Game/Masset/o3.txt"
+f1="./Masset/o1.txt"
+f2="./Masset/o2.txt"
+f3="./Masset/o3.txt"
 while [ $count -le 2 ] ; do
 clear
 cat $f1 | while IFS= read -r line; do echo -e "$line" ; done
@@ -127,8 +109,8 @@ monsterimg
 	   # NEED TO FIX COMBAT TO NOT APPLY DAMAGE IF THE MONSTER DIES BEFORE THEIR DAMAGE ACTION
 	   read -p "Choose your action: " action
 		case $action in
-        1)  get_damage_user ; clear ; get_damage_mon ;;
-        #2)  get_damagem_user ; clear ; get_damage_mon ;;
+        1)  get_damage_user ; get_damage_mon ; clear ;;
+        2)  get_damagem_user ; clear ; get_damage_mon ;;
         #3) clear ; def_up ;clear ; get_damage_mon ;;
         4) coward ; clear ;;
         *) clear ; echo "Invalid choice" ;;
@@ -147,6 +129,7 @@ monsterimg
 # Functions for User
 Character_info() {
     echo "$name"
+	echo -e "$Gld $Player_lvl"
     echo -e "$G HP $Std $Player_Health"
     echo -e "$Gld Level up at 25 $Std $Player_Experience"
     echo -e "$R Str $Std $Player_Strength"
@@ -168,7 +151,7 @@ eventdmg() {
 explore() {
     seed=$((RANDOM % 5))
 
-    if [ $seed -eq 0 ]; then 
+    if [ $seed -eq 0 ] && [ $Player_Strenght -le 19 ]; then 
         echo "You explore the great plains to the west, you find no trouble, and the trip leaves you feeling healthy and hardy"
         Player_Strength=$((Player_Strength + 2))
     elif [ $seed -eq 1 ]; then
@@ -183,19 +166,25 @@ explore() {
         echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
         Player_Health=$((Player_Health - $damage))
         echo "you have $Player_Health left"
-    elif [ $seed -eq 4 ]; then
+    elif [ $seed -eq 4 ] && [ $Mountain_true == false ]; then
         echo "You find a trail leading you towards the mountains"
+		Mountain_true=true
+	else
+		echo "Nothing new on the plains today"
     fi
 }
 
+
 # Main Loop
 while [ $Player_Health -gt 0 ]; do
+# NOTE TO SELF - MAKE IT SO YOU CAN ONLY REST ONCE PER 10 MINUTES SO PLAYERS CAN'T ABUSE RESTING TO HEAL AND WILL HAVE TO USE GOLD RESOURCES TO PAY TO SLEEP
+if [Player
     echo "$menuget"
     read -p "Choose an action: " action 
     case $action in
         1) clear ; explore ;;
         2) clear ; Character_info ;;
-        3) clear ; echo "resting.."; sleep 2; Player_Health=$Player_MaxHealth ;;
+        3) clear ; echo "resting..";  ; if sleep 2; Player_Health=$Player_MaxHealth ;;
         4) clear ; echo "testing damage" ; Player_Health=0 ;;
         5) clear ; echo "good bye"; sleep 2 ; exit ;;
         *) clear ; echo "Invalid choice" ;;
