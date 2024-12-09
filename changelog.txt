@@ -8,3 +8,8 @@ Change magic in the combat menu to ability, added Warrior Lifesteal attack
 Sleep Timer
 
 playerstate source was created to keep the code clean, Ideally I only want the main engine loop to exist in scarletdaughter.sh and most other functions being offloaded into sourced txt files.
+
+added conditions to both the discover Mountains event and the gain strength event on the plains
+need to try to see if I can make weighted choices for odds of going to a random location. Probably ranges, if number is 1-8 do A if 9-17 do B, etc...
+
+added the warriors lifesteal attack, and it works. Still need to refine the combat system.

@@ -7,7 +7,16 @@ source ./config.txt
 cat Gametitle.txt | while IFS= read -r line; do echo -e "$line" ; done
 
 # Get character name and weapon
+while true ; do
+
 read -p "What is your name Adventurer? (This will set your character name!) " name
+ if [[ -n "$name" ]]; then
+ break
+ else
+ echo "You must enter something"
+ fi
+done
+
 cat $menu1
 echo
 read -p "What is your weapon of choice? " choice
@@ -19,11 +28,11 @@ while true; do
 	3) class_weapon=Dagger ; break ;;
 	*) echo "Invalid choice"
 	esac
-	done
+done
 clear
 
 #loads the Playerstate file and all Variables associated with the player themselves
-source ./playerstate,txt
+source ./playerstate.txt
 
 # Monster Stats - I want to do an array style system where each zone can pull from 1 of 10 battles, and when it pulls the monster it randomly assigs their stats. 
 Amon_Health=20
@@ -45,13 +54,22 @@ get_damage_user() {
 }
 # Warriors lifegain attack
 lifesteal() {
-lfslcost=$(( 8 * Player_lvl ))
-Player_Health=$(( $Player_Health - $lfslcost ))
-damge=$((RANDOM % ( ($max_dmg - $min_dmg ) ) + 10 + Player_Strength))
-lfsldmg=$(echo "($damage /100) + 0.5) | bc ")
-Monster_Health=$((Monster_Health -$damage))
-Player_Health=$(( $Player_health + $lfsldmg ))
+    lfslcost=$(( 6 * Player_lvl ))
+    Player_Health=$(( $Player_Health - $lfslcost ))
+
+    # Ensure damage is an integer and division works with floating-point precision
+    damage=$((RANDOM % ( ($max_dmg - $min_dmg) ) + 10 + Player_Strength))
+
+    # Calculate lifesteal damage with floating-point precision
+    lfsldmg=$(( $damage /5 ))
+    # Apply the damage to monster and health to player
+    Monster_Health=$(( $Monster_Health - $damage ))
+    Player_Health=$(( $Player_Health + $lfsldmg ))
+
+    echo "You focus into your primal core and unleash a beastial attack dealing $damage damage and gaining $lfsldmg health."
+    sleep 2
 }
+
 # Monster attack
 get_damage_mon() {
     damage=$((RANDOM % ($a2 - $a1 + $Monster_Strength) ))
@@ -105,12 +123,13 @@ monsterimg
         # Monster Image and Health always stays on screen during combat
         echo "Player Health: $Player_Health, Monster Health: $Monster_Health"
         cat $menu2
+		echo
        #load the action menu and provides the actuall actions.
 	   # NEED TO FIX COMBAT TO NOT APPLY DAMAGE IF THE MONSTER DIES BEFORE THEIR DAMAGE ACTION
 	   read -p "Choose your action: " action
 		case $action in
         1)  get_damage_user ; get_damage_mon ; clear ;;
-        2)  get_damagem_user ; clear ; get_damage_mon ;;
+        2)  if [ $Player_class == "Warrior" ]; then  lifesteal ; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "cutthroat"]; then backstap; fi ; clear ; get_damage_mon ;;
         #3) clear ; def_up ;clear ; get_damage_mon ;;
         4) coward ; clear ;;
         *) clear ; echo "Invalid choice" ;;
@@ -129,6 +148,7 @@ monsterimg
 # Functions for User
 Character_info() {
     echo "$name"
+	echo "$Player_class"
 	echo -e "$Gld $Player_lvl"
     echo -e "$G HP $Std $Player_Health"
     echo -e "$Gld Level up at 25 $Std $Player_Experience"
@@ -151,7 +171,7 @@ eventdmg() {
 explore() {
     seed=$((RANDOM % 5))
 
-    if [ $seed -eq 0 ] && [ $Player_Strenght -le 19 ]; then 
+    if [ $seed -eq 0 ] && [ "$Player_Strength" -le "19" ]; then 
         echo "You explore the great plains to the west, you find no trouble, and the trip leaves you feeling healthy and hardy"
         Player_Strength=$((Player_Strength + 2))
     elif [ $seed -eq 1 ]; then
@@ -178,13 +198,12 @@ explore() {
 # Main Loop
 while [ $Player_Health -gt 0 ]; do
 # NOTE TO SELF - MAKE IT SO YOU CAN ONLY REST ONCE PER 10 MINUTES SO PLAYERS CAN'T ABUSE RESTING TO HEAL AND WILL HAVE TO USE GOLD RESOURCES TO PAY TO SLEEP
-if [Player
     echo "$menuget"
     read -p "Choose an action: " action 
     case $action in
         1) clear ; explore ;;
         2) clear ; Character_info ;;
-        3) clear ; echo "resting..";  ; if sleep 2; Player_Health=$Player_MaxHealth ;;
+        3) clear ; echo "resting.."; sleep 2; Player_Health=$Player_MaxHealth ;;
         4) clear ; echo "testing damage" ; Player_Health=0 ;;
         5) clear ; echo "good bye"; sleep 2 ; exit ;;
         *) clear ; echo "Invalid choice" ;;
