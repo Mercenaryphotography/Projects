@@ -1,0 +1,7 @@
+# Player States
+
+Mountain_true=false
+Lake_true=false
+Plains_true=true
+Ruins_true=false
+Cave_true=false

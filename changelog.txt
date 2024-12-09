@@ -1,0 +1,5 @@
+Sun 08 Dec 2024 08:26:22 PM EST
+Starting a change log for ye olde github
+
+Changed the weapon select to also set the players class and starting stats.
+
