@@ -3,8 +3,5 @@
  "--=---=---=---=---=---=---="
  		1) Great Plains
  		2) Mountains  
- 		3) Unknown  		 
- 		4) Unknown		 
- 		5) Unknown
-		6) Unknown
+ 		3) Return to Town
  "--=---=---=---=---=---=---="

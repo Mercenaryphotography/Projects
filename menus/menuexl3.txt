@@ -4,7 +4,5 @@
  		1) Great Plains
  		2) Mountains  
  		3) Cave 		 
- 		4) Unknown		 
- 		5) Unknown
-		6) Unknown
+ 		4) Return to Town
  "--=---=---=---=---=---=---="

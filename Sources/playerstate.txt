@@ -1,0 +1,63 @@
+# Player States
+
+# Starting Stats
+
+Player_lvl=1
+Player_exp=0 #Level ups increase base states depending on the level achieved.
+# DESIGN LEVEL SYSTEM
+statusp=0       
+#Is the player Poisoned?
+potion=0		
+#Does the player have a potion on them (can only hold 1)
+if [ $class_weapon == "Sword" ] ; then
+min_dmg=3
+max_dmg=5
+Player_class=Warrior
+Player_Health=100
+Player_MaxHealth=100 
+#Used for healing to full health
+Player_Strength=15	
+#Strength adds to the damage of your weapon
+Player_Defense=10	
+#Defense subtracts from the enemey damage
+Player_Luck=2
+elif [ $class_weapon == "Staff" ] ; then
+min_dmg=1
+max_dmg=3
+Player_class=Mage
+Player_Health=75
+Player_MaxHealth=75 
+#Used for healing to full health
+Player_Strength=8	
+#Strength adds to the damage of your weapon
+Player_Defense=6	
+#Defense subtracts from the enemey damage
+Player_Luck=4
+Player_Mana=20
+Player_Maxmana=20
+elif [ $class_weapon == "Dagger" ] ; then
+min_dmg=2
+max_dmg=4
+Player_class=Cutthroat
+Player_Health=80
+Player_MaxHealth=
+Player_Strength=12
+Player_Defense=10	
+Player_Luck=8
+fi
+
+
+# Environment flags
+Mountains=0
+Lake=0
+Plains=1
+Ruins=0
+Caves=0
+River=0
+
+# Story Flags
+Witch_Amulet=missing
+Witch_Heart=missing
+Witch_Cauldron=missing
+Witch_Eyes=missing
+Witch_Book=missing

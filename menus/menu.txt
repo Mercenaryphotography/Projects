@@ -4,6 +4,6 @@
  		1) Explore
  		2) Status   	   
  		3) Rest     		 
- 		4) Inventroy		 
+ 		4) Inventroy(set to instant kill for testing)	 
  		5) Exit              
  "--=---=---=---=---=---=---="

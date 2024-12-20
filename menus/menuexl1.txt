@@ -2,9 +2,5 @@
  "        Where To?          "
  "--=---=---=---=---=---=---="
  		1) Great Plains
- 		2) Unknown   
- 		3) Unknown  		 
- 		4) Unknown		 
- 		5) Unknown
-		6) Unknown
+ 		2) Return to Town
  "--=---=---=---=---=---=---="

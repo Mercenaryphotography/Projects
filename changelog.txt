@@ -1,4 +1,6 @@
+===================================
 Sun 08 Dec 2024 08:26:22 PM EST
+===================================
 Starting a change log for ye olde github
 
 Changed the weapon select to also set the players class and starting stats.
@@ -13,3 +15,30 @@ added conditions to both the discover Mountains event and the gain strength even
 need to try to see if I can make weighted choices for odds of going to a random location. Probably ranges, if number is 1-8 do A if 9-17 do B, etc...
 
 added the warriors lifesteal attack, and it works. Still need to refine the combat system.
+=================================
+Mon 09 Dec 2024 04:54:41 PM EST
+=================================
+made the world map source and made a folder for all the source files to live in, no extra explore options made but mountains is next.
+
+added 5 more locations to Plains for variety, a one time luck increase and a lore piece. Need to rework the base menu to be a more in the Capital city.
+
+added some story flags for later progression calls.
+=============================================
+Wed 16 Dec 2024 10:14:17 PM EST
+=============================================
+
+Added new menus for exlore function, set flags to load depending on what location flags have been triggered
+
+fixed the current game not running bugs, have to remember to close of my functions correctly
+
+=============================================
+Fri 20 Dec 2024 03:18:55 PM EST
+=============================================
+
+Fixed the coward function and run away in combat
+
+cleaned up some of the comments
+
+fixed up World and Playerstate, switched true and false flags to boolean 0 and 1 flags instead for simplicity
+
+added mountain events, need to still make more combats. possibly make a simple enemy logic loop for some random aspects to battle.

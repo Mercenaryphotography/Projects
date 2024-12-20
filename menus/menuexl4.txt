@@ -5,6 +5,5 @@
  		2) Mountains  
  		3) Cave 		 
  		4) River		 
- 		5) Unknown
-		6) Unknown
+ 		5) Return to Town
  "--=---=---=---=---=---=---="

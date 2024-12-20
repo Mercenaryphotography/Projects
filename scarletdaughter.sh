@@ -1,11 +1,12 @@
 #!/bin/bash
 
 clear
+Player_Health=100
+source ./Sources/config.txt
 
-source ./config.txt
+
 
 cat Gametitle.txt | while IFS= read -r line; do echo -e "$line" ; done
-
 # Get character name and weapon
 while true ; do
 
@@ -17,11 +18,12 @@ read -p "What is your name Adventurer? (This will set your character name!) " na
  fi
 done
 
+while true; do
 cat $menu1
 echo
 read -p "What is your weapon of choice? " choice
 echo " "
-while true; do
+
 	case $choice in
 	1) class_weapon=Sword ; break ;;
 	2) class_weapon=Staff ; break ;;
@@ -32,10 +34,66 @@ done
 clear
 
 #loads the Playerstate file and all Variables associated with the player themselves
-source ./playerstate.txt
+source ./Sources/playerstate.txt
+source ./Sources/world.txt
+
+# Explore function, checks for map flags, then loads the appropriate menu and case option loop.
+explore() {
+    echo "Debugging Explore function: Checking map flags..."
+    echo "Plains: $Plains, Caves: $Caves, Mountains: $Mountains, River: $River, Ruins: $Ruins, Lake: $Lake"
+
+    # Check conditions and display the appropriate menu
+    if [[ "$Plains" == "1" ]] && [[ "$Caves" == "0" ]] && [[ "$Mountains" == "0" ]] && [[ "$River" == "0" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
+        clear
+		cat ./menus/menuexl1.txt
+        read -p "Choose an action: " action
+        case $action in
+            1) plains ;;
+            2) return ;; # Exit explore function
+            *) echo "Invalid choice";;
+        esac
+    elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "0" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "0" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
+        clear
+		cat ./menus/menuexl2.txt
+        read -p "Choose an action: " action
+        case $action in
+            1) plains ;;
+            2) mountains ;;
+            3) return ;; # Exit explore function
+            *) echo "Invalid choice";;
+        esac
+    elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "1" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "0" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
+        cat ./menus/menuexl3.txt
+    elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "1" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "1" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
+        cat ./menus/menuexl4.txt
+    elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "1" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "1" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "1" ]]; then
+        cat ./menus/menuexl5.txt
+    elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "1" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "1" ]] && [[ "$Ruins" == "1" ]] && [[ "$Lake" == "1" ]]; then
+        cat ./menus/menuexl6.txt
+    else
+        echo "No valid map configuration found!"
+    fi
+}
+
+
+# the town menu function
+town_menu() {
+    cat ./menus/menu.txt
+    read -p "Choose an action: " action
+    case $action in
+        1) clear; explore ;;          # Option 1: Explore the world
+        2) clear; Character_info ;;   # Option 2: Show character info
+        3) clear; echo "resting.."; sleep 2; Player_Health=$Player_MaxHealth ;;  # Option 3: Rest and heal
+        4) clear; echo "testing damage"; Player_Health=0; sleep 2 ;;  # Option 4: Test damage (set health to 0)
+        5) clear; echo "goodbye"; sleep 2; exit ;;  # Option 5: Exit the game
+        *) clear; echo "Invalid choice" ;;  # Default case for invalid input
+    esac
+}
+
 
 # Monster Stats - I want to do an array style system where each zone can pull from 1 of 10 battles, and when it pulls the monster it randomly assigs their stats. 
 Amon_Health=20
+Amon_Maxhealth=20
 Amon_exp=9
 Amon_Strength=10
 Amon_Defense=8
@@ -78,35 +136,34 @@ get_damage_mon() {
 	sleep 2
 	
 }
-# Run from battle - Should make IF check a varaible grab depending on zone
-coward () {
-	run=$((RANDOM % 10 + 1 + $Player_Luck))
-	if [ $run -gt 6  ]; then
-	echo You get away
-	sleep 2
-	break
+
+coward() {
+	if [ $run -gt 6 ] ; then 
+	echo You get away ; sleep 2
+	town_menu 
 	else
 	echo You are unable to escape
-	get_damage_mon
+	get_damage_mon ; sleep 2 
 	fi
 }
+
 # Load Monster Image
 monsterimg() {
     count=0
 # Cat the ascii art, pipe that into a loop that reads each line and inputs it one line at a time into a variable called line, then we
 # Echo -e $line to display the txt files with their ansi codes inbedded
-f1="./Masset/o1.txt"
-f2="./Masset/o2.txt"
-f3="./Masset/o3.txt"
+Orc1="./Masset/o1.txt"
+Orc2="./Masset/o2.txt"
+Orc3="./Masset/o3.txt"
 while [ $count -le 2 ] ; do
 clear
-cat $f1 | while IFS= read -r line; do echo -e "$line" ; done
+cat $Orc1 | while IFS= read -r line; do echo -e "$line" ; done
 sleep 0.25
 clear
-cat $f2 | while IFS= read -r line; do echo -e "$line" ; done
+cat $Orc2 | while IFS= read -r line; do echo -e "$line" ; done
 sleep 0.25
 clear
-cat $f3 | while IFS= read -r line; do echo -e "$line" ; done
+cat $Orc3 | while IFS= read -r line; do echo -e "$line" ; done
 sleep 0.25
 let count++
 done
@@ -118,7 +175,7 @@ monsterimg
 # I need to implement a system here to pick the monster type so it can call the right monsterimg files
     while true; do
 		clear
-		
+		run=$((RANDOM % 10 + 1 + $Player_Luck))
        cat ./Masset/o3.txt | while IFS= read -r line; do echo -e "$line" ; done
         # Monster Image and Health always stays on screen during combat
         echo "Player Health: $Player_Health, Monster Health: $Monster_Health"
@@ -129,9 +186,9 @@ monsterimg
 	   read -p "Choose your action: " action
 		case $action in
         1)  get_damage_user ; get_damage_mon ; clear ;;
-        2)  if [ $Player_class == "Warrior" ]; then  lifesteal ; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "cutthroat"]; then backstap; fi ; clear ; get_damage_mon ;;
+        2)  if [ $Player_class == "Warrior" ] ; then  lifesteal ; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "cutthroat" ]; then backstap; fi ; clear ; get_damage_mon ;;
         #3) clear ; def_up ;clear ; get_damage_mon ;;
-        4) coward ; clear ;;
+        4) clear; coward ;;
         *) clear ; echo "Invalid choice" ;;
     esac
 	if [ $Player_Health -le 1 ] ; then
@@ -154,70 +211,29 @@ Character_info() {
     echo -e "$Gld Level up at 25 $Std $Player_Experience"
     echo -e "$R Str $Std $Player_Strength"
     echo -e "$B Def $Std $Player_Defense"
-    if [ "$statusp" = "true" ]; then
+	echo -e "$Y luck $Std $Player_Luck"
+    if [ "$statusp" = "1" ]; then
         echo -e "$P POISONED $std Antidote to Cure"
     else
         echo "HEALTHY"
     fi
 }
 
-# Locations and Random Event Functions
-locations=("Plains" "Cave" "Ruins" "Mountains" "River" "Lake")
-
-eventdmg() {
-    echo $((RANDOM % 8 + 1)) 
-}
-
-explore() {
-    seed=$((RANDOM % 5))
-
-    if [ $seed -eq 0 ] && [ "$Player_Strength" -le "19" ]; then 
-        echo "You explore the great plains to the west, you find no trouble, and the trip leaves you feeling healthy and hardy"
-        Player_Strength=$((Player_Strength + 2))
-    elif [ $seed -eq 1 ]; then
-        echo "You slink through the long grass of the great plains and find yourself suddenly chest to chest with an orc. You ready your weapon."
-		read -n 1 -srp "Hit any key to continue..." 	
-        fightfight
-    elif [ $seed -eq 2 ]; then
-        echo "You find a merchant wandering the roads between the mountains and the capital, you offer them an escort and they gladly accept. You are gifted a potion for your troubles"
-        potion=true
-    elif [ $seed -eq 3 ]; then
-        damage=$(eventdmg)
-        echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
-        Player_Health=$((Player_Health - $damage))
-        echo "you have $Player_Health left"
-    elif [ $seed -eq 4 ] && [ $Mountain_true == false ]; then
-        echo "You find a trail leading you towards the mountains"
-		Mountain_true=true
-	else
-		echo "Nothing new on the plains today"
-    fi
-}
 
 
 # Main Loop
-while [ $Player_Health -gt 0 ]; do
-# NOTE TO SELF - MAKE IT SO YOU CAN ONLY REST ONCE PER 10 MINUTES SO PLAYERS CAN'T ABUSE RESTING TO HEAL AND WILL HAVE TO USE GOLD RESOURCES TO PAY TO SLEEP
-    echo "$menuget"
-    read -p "Choose an action: " action 
-    case $action in
-        1) clear ; explore ;;
-        2) clear ; Character_info ;;
-        3) clear ; echo "resting.."; sleep 2; Player_Health=$Player_MaxHealth ;;
-        4) clear ; echo "testing damage" ; Player_Health=0 ;;
-        5) clear ; echo "good bye"; sleep 2 ; exit ;;
-        *) clear ; echo "Invalid choice" ;;
-    esac
-
-    while [ $Player_Health -le 1 ]; do
-        echo "you have met an untimely end, good luck in your next life"
-        read -p "Would you like to try again? (Y/N) " yn
-        if [ "$yn" == "Y" ]; then
-            Player_Health=$Player_MaxHealth
-        elif [ "$yn" == "N" ]; then
-            echo "Goodbye"
-            sleep 1
-            exit
-        fi
-    done
+while true; do
+   if [[ $Player_Health -gt 0 ]]; then
+      town_menu
+   elif [[ $Player_Health -lt 1 ]]; then
+      echo "You have met an untimely end, good luck in your next life."
+      read -p "Would you like to try again? (Y/N) " yn
+      if [[ "$yn" == "Y" || "$yn" == "y" ]]; then
+         Player_Health=$Player_MaxHealth
+      elif [[ "$yn" == "N" || "$yn" == "n" ]]; then
+         echo "Goodbye"
+         sleep 1
+         exit
+      fi
+   fi
 done
