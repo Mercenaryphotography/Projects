@@ -56,17 +56,14 @@ explore() {
     # Check conditions and display the appropriate menu
     if [[ "$Plains" == "1" ]] && [[ "$Caves" == "0" ]] && [[ "$Mountains" == "0" ]] && [[ "$River" == "0" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
         clear
-		
-		while true; do
 		cat ./menus/menuexl1.txt
 		echo
         read -p "Choose an action: " action
         case $action in
             1) clear ; plains ;;
-            2) clear ; return ;; # Exit explore function
+            2) clear ; return ;; 
             *) echo "Invalid choice";;
         esac
-		done
     elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "0" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "0" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
         clear
 		cat ./menus/menuexl2.txt
@@ -75,7 +72,7 @@ explore() {
         case $action in
             1) clear ; plains ;;
             2) clear ; mountains ;;
-            3) clear ; return ;; # Exit explore function
+            3) clear ; return ;; 
             *) echo "Invalid choice";;
         esac
     elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "1" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "0" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
@@ -85,9 +82,10 @@ explore() {
 		case $action in
 			 1) clear ; plains ;;
             2) clear ; mountains ;;
-			3)
-            4) clear ; return ;; # Exit explore function
+			3) clear ; caves ;;
+            4) clear ; return ;; 
             *) echo "Invalid choice";;
+		esac
     elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "1" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "1" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
         cat ./menus/menuexl4.txt
     elif [[ "$Plains" == "1" ]] && [[ "$Caves" == "1" ]] && [[ "$Mountains" == "1" ]] && [[ "$River" == "1" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "1" ]]; then
