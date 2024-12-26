@@ -1,7 +1,6 @@
 # Player States
 
 # Starting Stats
-
 Player_lvl=1
 Player_exp=0 #Level ups increase base states depending on the level achieved.
 # DESIGN LEVEL SYSTEM
@@ -45,7 +44,13 @@ Player_Strength=12
 Player_Defense=10	
 Player_Luck=8
 fi
-
+# Level up function for Warrior Class
+ levelupw(){
+ 	if [ $Player_exp -gt 25 ] && [ $Player_exp -lt 100 ] ; then
+	Player_lvl=2
+	Player_Strength=$(Player_Strength+5))
+	Player_MaxHealth=$(Player_MaxHealth + 20)
+	
 
 # Environment flags
 Mountains=0

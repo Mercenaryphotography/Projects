@@ -42,3 +42,31 @@ cleaned up some of the comments
 fixed up World and Playerstate, switched true and false flags to boolean 0 and 1 flags instead for simplicity
 
 added mountain events, need to still make more combats. possibly make a simple enemy logic loop for some random aspects to battle.
+
+fixed spacing issues with some prompts
+
+Created a basic Save and Load Function and Delete added to the Sources dir.
+
+figured out how to make choices case sensistive so that makes things easier in case strings
+
+modified combat to pull randomly from a pool
+
+=============================================
+Mon 23 Dec 2024 12:05:22 PM EST
+=============================================
+Fixed combat bugs, looks like its working the way I wanted it to, need to refine the monster stats
+
+Started doing more verbose describptions for one time events.
+
+Started framing a level up system, will replace inventory in the main menu, inventory will go with combat and status.
+
+=============================================
+Thu 26 Dec 2024 03:32:31 PM EST
+=============================================
+
+To Do - 1- finish mountain and cave locations
+		2- level up system
+		3- Inventory System
+		4- finish monster pools (3-4 unique encounters per zone)
+		5- boss system for discovering new areas?
+

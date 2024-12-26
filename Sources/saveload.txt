@@ -1,0 +1,120 @@
+# Save and Load Function
+
+savegame(){
+echo name=$name > save.txt
+echo Player_lvl=$Player_lvl >> save.txt
+echo Player_exp=0 >> save.txt #Level ups increase base states depending on the level achieved.
+# DESIGN LEVEL SYSTEM
+echo statusp=0 >> save.txt     
+#Is the player Poisoned?
+echo potion=0 >> save.txt	
+#Does the player have a potion on them (can only hold 1)
+echo min_dmg=3 >> save.txt
+echo max_dmg=5 >> save.txt
+echo Player_class=$Player_class >> save.txt
+echo Player_Health=$Player_Health >> save.txt
+echo Player_MaxHealth=$Player_MaxHealth >> save.txt
+#Used for healing to full health
+echo Player_Strength=$Player_Strength >> save.txt
+#Strength adds to the damage of your weapon
+echo Player_Defense=$Player_Defense	>> save.txt
+#Defense subtracts from the enemey damage
+echo Player_Luck=$Player_Luck  >> save.txt
+echo Player_Mana=$Player_Mana >> save.txt
+echo Player_Maxmana=$Player_Maxmana >> save.txt
+
+
+# Environment flags
+Mountains=$Mountains >> save.txt
+Lake=$Lake >> save.txt
+Plains=$Plains >> save.txt
+Ruins=$Ruins >> save.txt
+Caves=$Caves >> save.txt
+River=$River >> save.txt
+
+# Story Flags
+Witch_Amulet=$Witch_Amulet >> save.txt
+Witch_Heart=$Witch_Heart >> save.txt
+Witch_Cauldron=$Witch_Cauldron >> save.txt
+Witch_Eyes=$Witch_Eyes >> save.txt
+Witch_Book=$Witch_Book >> save.txt
+
+echo " Game saved to $(pwd) "
+}
+
+loadgame(){
+    if [ -f save.txt ]; then
+        # Read each line from save.txt and set flags and player name
+        while IFS="=" read -r key value; do
+            case $key in
+                "name") name=$value ;;
+                "Player_lvl") Player_lvl=$value ;;
+                "Player_exp") Player_exp=$value ;;
+                "statusp") statusp=$value ;;
+                "potion") potion=$value ;;
+                "min_dmg") min_dmg=$value ;;
+                "max_dmg") max_dmg=$value ;;
+                "Player_class") Player_class=$value ;;
+                "Player_Health") Player_Health=$value ;;
+                "Player_MaxHealth") Player_MaxHealth=$value ;;
+                "Player_Strength") Player_Strength=$value ;;
+                "Player_Defense") Player_Defense=$value ;;
+                "Player_Luck") Player_Luck=$value ;;
+                "Player_Mana") Player_Mana=$value ;;
+                "Player_Maxmana") Player_Maxmana=$value ;;
+                "Mountains") Mountains=$value ;;
+                "Lake") Lake=$value ;;
+                "Plains") Plains=$value ;;
+                "Ruins") Ruins=$value ;;
+                "Caves") Caves=$value ;;
+                "River") River=$value ;;
+                "Witch_Amulet") Witch_Amulet=$value ;;
+                "Witch_Heart") Witch_Heart=$value ;;
+                "Witch_Cauldron") Witch_Cauldron=$value ;;
+                "Witch_Eyes") Witch_Eyes=$value ;;
+                "Witch_Book") Witch_Book=$value ;;
+            esac
+        done < save.txt
+        
+        echo "Game loaded."
+        echo "Welcome back, $name!"
+    else
+        echo "No save file found, starting a new game with default values."
+        
+        # Set default starting values for a new game
+        name="Adventurer"
+        Player_lvl=1
+        Player_exp=0
+        statusp=0
+        potion=0
+        min_dmg=0
+        max_dmg=0
+        Player_class="default"
+        Player_Health=100
+        Player_MaxHealth=100
+        Player_Strength=5
+        Player_Defense=2
+        Player_Luck=0
+        Player_Mana=50
+        Player_Maxmana=50
+        Mountains=0
+        Lake=0
+        Plains=1
+        Ruins=0
+        Caves=0
+        River=0
+        Witch_Amulet=0
+        Witch_Heart=0
+        Witch_Cauldron=0
+        Witch_Eyes=0
+        Witch_Book=0
+        
+        # Proceed with new game setup or prompt for character name, class, etc.
+    fi
+}
+
+
+deletegame() {
+	rm -r save.txt
+	echo file deleted
+}

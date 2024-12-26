@@ -1,0 +1,25 @@
+Amon_Health=20
+Amon_Maxhealth=20
+Amon_exp=9
+Amon_Strength=10
+Amon_Defense=8
+a2=5
+a1=2
+
+Monster_Health=$Amon_Health
+Monster_Strength=$Amon_Strength
+
+
+
+
+# Plains Monster Pool
+
+# Mountains Monster Pool
+
+# Caves Monster Pool
+
+# River Monster Pool
+
+# Lake Monster Pool
+
+# 

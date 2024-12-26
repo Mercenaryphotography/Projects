@@ -19,3 +19,23 @@ titleget=./Gametitle.txt
 menuget=./menus/menu.txt
 menu1=./menus/menust.txt
 menu2=./menus/menuc.txt
+
+# the town menu function
+town_menu() {
+echo " Use "S" to save your game. Use "D" to delete your save. "
+    cat ./menus/menu.txt
+	echo
+	shopt -s nocasematch
+    read -p "Choose an action: " action
+    case $action in
+        1) clear; explore ;;          # Option 1: Explore the world
+        2) clear; Character_info ;;   # Option 2: Show character info
+        3) clear; echo "resting.."; sleep 2; Player_Health=$Player_MaxHealth ;;  # Option 3: Rest and heal
+        4) clear; echo "testing damage"; Player_Health=0; sleep 2 ;;  # Option 4: Test damage (set health to 0)
+        5) clear; echo "goodbye"; sleep 2; exit ;;  # Option 5: Exit the game
+		S) clear; savegame ;;
+		D) clear; deletegame ;;
+        *) clear; echo "Invalid choice" ;;  # Default case for invalid input
+    esac
+	shopt -u nocasematch
+}
