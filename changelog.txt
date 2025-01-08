@@ -69,4 +69,5 @@ To Do - 1- finish mountain and cave locations
 		3- Inventory System
 		4- finish monster pools (3-4 unique encounters per zone)
 		5- boss system for discovering new areas?
+		6- Redo combat damage
 

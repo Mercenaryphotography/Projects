@@ -61,7 +61,7 @@ random_messagep=${whisperps[$((RANDOM % ${#whisperps[@]}))]}
 		echo -e " you suddenly hear a voice whisper $BB $random_messagep $Std "
 	elif [ $seed -eq 9 ] ; then
 		echo " You feel a chill, as if someone is watching you "
-		echo -e "$BB $random_message $Std"
+		echo -e "$BB $random_messagep $Std"
 		echo " Flashes across your mind unbidden "
 	else
 		echo " Nothing new on the plains today "
