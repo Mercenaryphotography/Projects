@@ -122,8 +122,16 @@ Character_info() {
 	echo -e "$Y luck $Std $Player_Luck"
     if [ "$statusp" = "1" ]; then
         echo -e "$P POISONED $std Antidote to Cure"
-    else
-        echo "HEALTHY"
+	elif [[ "$Witch_Amulet" == "obtained" ]] && [[ "$Witch_Heart" == "missing" ]] && [[ "$Witch_Cauldron" == "missing" ]] && [[ "$Witch_Eyes" == "missing" ]] && [[ "$Witch_Book" == "missing" ]]; then
+    echo -e "$Gld Witch Amulet $Std"
+	elif [[ "$Witch_Amulet" == "obtained" ]] && [[ "$Witch_Heart" == "obtained" ]] && [[ "$Witch_Cauldron" == "missing" ]] && [[ "$Witch_Eyes" == "missing" ]] && [[ "$Witch_Book" == "missing" ]]; then
+    echo -e "$Gld Witch Amulet $Std $Gld Witch Heart $Std"
+	elif [[ "$Witch_Amulet" == "obtained" ]] && [[ "$Witch_Heart" == "obtained" ]] && [[ "$Witch_Cauldron" == "obtained" ]] && [[ "$Witch_Eyes" == "missing" ]] && [[ "$Witch_Book" == "missing" ]]; then
+    echo -e "$Gld Witch Amulet $Std $Gld Witch Heart $Std $Gld Witch Cauldron $Std"
+	elif [[ "$Witch_Amulet" == "obtained" ]] && [[ "$Witch_Heart" == "obtained" ]] && [[ "$Witch_Cauldron" == "obtained" ]] && [[ "$Witch_Eyes" == "obtained" ]] && [[ "$Witch_Book" == "missing" ]]; then
+    echo -e "$Gld Witch Amulet $Std $Gld Witch Heart $Std $Gld Witch Cauldron $Std $Gld Witch Eyes $Std"
+	elif [[ "$Witch_Amulet" == "obtained" ]] && [[ "$Witch_Heart" == "obtained" ]] && [[ "$Witch_Cauldron" == "obtained" ]] && [[ "$Witch_Eyes" == "obtained" ]] && [[ "$Witch_Book" == "obtained" ]]; then
+    echo -e "$Gld Witch Amulet $Std $Gld Witch Heart $Std $Gld Witch Cauldron $Std $Gld Witch Eyes $Std $Gld Witch Book $Std"
     fi
 }
 

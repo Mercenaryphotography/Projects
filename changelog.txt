@@ -70,4 +70,12 @@ To Do - 1- finish mountain and cave locations
 		4- finish monster pools (3-4 unique encounters per zone)
 		5- boss system for discovering new areas?
 		6- Redo combat damage
+=============================================
+Wed 08 Jan 2025 08:27:09 PM EST
+=============================================
+Redid combat damage
+Changed the save dialogue to blue to make it stand out
+Changed it so it doesnt default to Orc for every combat text.
+Coloured the Boar
+
 
