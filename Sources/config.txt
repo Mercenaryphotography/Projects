@@ -1,19 +1,13 @@
 #Font colour
 R='\033[0;31m'   
 G='\033[0;32m'   
-Y='\033[1;32m'   
+Br='\033[0;33m'   
 B='\033[0;34m'
 P='\033[0;35m'
 Gld='\033[0;93m'
 BB='\033[0;90m'
 Std='\033[0m'
-
-# Graphic setup, makes a tempfolder downloads the files then points to files for the game to use.
-
-# titleurl="https://raw.github.com/Mercenaryphotography/Projects/master/Gametitle.txt"
-# titleget=$(wget -qO- "$titleurl")
-
-# menuurl="https://raw.githubusercontent.com/Mercenaryphotography/Projects/refs/heads/master/menu.txt"
+W='\033[0;97m'
 
 titleget=./Gametitle.txt
 menuget=./menus/menu.txt
@@ -22,19 +16,25 @@ menu2=./menus/menuc.txt
 
 # the town menu function
 town_menu() {
-echo " Use "S" to save your game. Use "D" to delete your save. "
+savecount=20
+if [ $savecount -gt 0 ] ; then
+echo -e " $B Use "S" to save your game. Use "D" to delete your save. $Std "
+else
+echo -e $G HP $Std "$Player_Health"
+fi
     cat ./menus/menu.txt
 	echo
-	shopt -s nocasematch
+	shopt -s nocasematch #Turns off case sensitivity for selection of action
     read -p "Choose an action: " action
-    case $action in
-        1) clear; explore ;;          # Option 1: Explore the world
-        2) clear; Character_info ;;   # Option 2: Show character info
+    case $action in # All functions load in main script
+        1) clear; explore ; ((savecount--)) ;;          # Option 1: Explore the world
+        2) clear; Character_info ; ((savecount--)) ;;   # Option 2: Show character info
         3) clear; echo "resting.."; sleep 2; Player_Health=$Player_MaxHealth ;;  # Option 3: Rest and heal
         4) clear; echo "testing damage"; Player_Health=0; sleep 2 ;;  # Option 4: Test damage (set health to 0)
         5) clear; echo "goodbye"; sleep 2; exit ;;  # Option 5: Exit the game
 		S) clear; savegame ;;
 		D) clear; deletegame ;;
+		X) clear; read -p " Set your EXP " Player_exp ;;
         *) clear; echo "Invalid choice" ;;  # Default case for invalid input
     esac
 	shopt -u nocasematch

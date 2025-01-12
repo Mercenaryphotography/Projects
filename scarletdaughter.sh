@@ -46,7 +46,6 @@ clear
 
 # states that look for name or class_weapon 
 source ./Sources/world.txt
-source ./Sources/monsterstate.txt
 source ./Sources/playerstate.txt
 # Explore function, checks for map flags, then loads the appropriate menu and case option loop.
 explore() {
@@ -99,7 +98,8 @@ explore() {
 
 
 coward() {
-	if [ $run -gt 6 ] ; then 
+running=$((Player_lvl * 6))
+	if [ $run -gt $running ] ; then 
 	echo You get away ; sleep 2
 	Amon_Health=Amon_Maxhealth
 	town_menu 

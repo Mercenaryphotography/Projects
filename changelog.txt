@@ -78,4 +78,14 @@ Changed the save dialogue to blue to make it stand out
 Changed it so it doesnt default to Orc for every combat text.
 Coloured the Boar
 
-
+=============================================
+Sat 11 Jan 2025 10:35:35 PM EST
+=============================================
+fixed broken combat for special ability now that the damage is an array range instead of a min and max
+reflowed the combat loop to check for monster health before it gets to attack
+moved the monster animations to their own source file called masset.txt in the Sources directory
+level up system added, haven't tested it for balancing yet. will probably need to be tweaked a lot.
+got rid of Monsterstate.txt source. Will just keep the pools in the combat source instead.
+fixed explore function for defaulting, if it hits a bad seed number then it will default to battle while the count is still active.
+made a quick track to end game, want to test scaling so I know where the Witch should be at for the final boss fight.
+started creating the menus for each classes ability options. by level 20 each non mage will have 3 abilities and the mage will have 5 spells

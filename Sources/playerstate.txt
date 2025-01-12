@@ -3,40 +3,38 @@
 # Starting Stats
 Player_lvl=1
 Player_exp=0 #Level ups increase base states depending on the level achieved.
-# DESIGN LEVEL SYSTEM
 statusp=0       
 #Is the player Poisoned?
 potion=0		
 #Does the player have a potion on them (can only hold 1)
+
+# Warrior
 if [ $class_weapon == "Sword" ] ; then
-min_dmg=3
-max_dmg=5
+player_damages=( "1" "2" "3" "4" "5" )
 Player_class=Warrior
 Player_Health=100
-Player_MaxHealth=100 
-#Used for healing to full health
-Player_Strength=15	
-#Strength adds to the damage of your weapon
-Player_Defense=10	
-#Defense subtracts from the enemey damage
+Player_MaxHealth=100 #Used for healing to full health
+Player_Strength=15	#Strength adds to the damage of your weapon
+Player_Defense=10	#Defense subtracts from the enemey damage
 Player_Luck=2
+
+# Mage
 elif [ $class_weapon == "Staff" ] ; then
-min_dmg=1
-max_dmg=3
+player_damages=( "1" "2" "3" )
 Player_class=Mage
 Player_Health=75
-Player_MaxHealth=75 
-#Used for healing to full health
-Player_Strength=8	
-#Strength adds to the damage of your weapon
-Player_Defense=6	
-#Defense subtracts from the enemey damage
+Player_MaxHealth=75
+Player_Strength=8
+Player_Defense=6
 Player_Luck=4
 Player_Mana=20
 Player_Maxmana=20
+
+# Cutthroat
 elif [ $class_weapon == "Dagger" ] ; then
 min_dmg=2
 max_dmg=4
+player_damages=( "2" "3" "4" )
 Player_class=Cutthroat
 Player_Health=80
 Player_MaxHealth=
@@ -44,14 +42,60 @@ Player_Strength=12
 Player_Defense=10	
 Player_Luck=8
 fi
+# Function to level up and increase stats
+level_up() {
+    # Define stat increases based on the class
+    case $Player_class in
+        "Warrior")
+            Player_Health=$((Player_Health + 10 * Player_lvl))
+            Player_MaxHealth=$((Player_MaxHealth + 10 * Player_lvl))
+            Player_Strength=$((Player_Strength + 5 * Player_lvl))
+            Player_Defense=$((Player_Defense + 2 * Player_lvl))
+            Player_Luck=$((Player_Luck + 1 * Player_lvl))
+            ;;
+        "Mage")
+            Player_Health=$((Player_Health + 8  * Player_lvl))
+            Player_MaxHealth=$((Player_MaxHealth + 8 * Player_lvl))
+            Player_Strength=$((Player_Strength + 1 * Player_lvl))
+            Player_Defense=$((Player_Defense + 1 * Player_lvl))
+            Player_Luck=$((Player_Luck + 1 * Player_lvl))
+            Player_Mana=$((Player_Mana + 5 * Player_lvl))
+            Player_Maxmana=$((Player_Maxmana + 5 * Player_lvl))
+            ;;
+        "Cutthroat")
+            Player_Health=$((Player_Health + 6 * Player_lvl))
+            Player_MaxHealth=$((Player_MaxHealth + 6 * Player_lvl))
+            Player_Strength=$((Player_Strength + 3 * Player_lvl))
+            Player_Defense=$((Player_Defense + 2 * Player_lvl))
+            Player_Luck=$((Player_Luck + 2 * Player_lvl))
+            ;;
+    esac
+    
+    Player_lvl=$((Player_lvl + 1))
+    echo "Level Up! You are now level $Player_lvl"
+    if [ $Player_class == Warrior ] || [ $Player_class == Cutthroat ] ; then
+	echo "New Stats!!! Max Health $Player_Health, Strength $Player_Strength, Defense $Player_Defense, Luck $Player_Luck"
+	else
+	echo "New Stats!!! Max Health $Player_MaxHealth, Max Mana $Player_Maxmana, Defense $Player_Defense, Luck $Player_Luck"
+	fi
+}
 
-# Level up function for Warrior Class
- #levelupw(){
- 	#if [ $Player_exp -gt 25 ] && [ $Player_exp -lt 100 ] ; then
-	#Player_lvl=2
-	#Player_Strength=$(Player_Strength+5)
-	#Player_MaxHealth=$(Player_MaxHealth + 20)
-	
+# Level function
+check_level_up() {
+    # Calculate the experience range for the current level
+    local exp_required
+    if [ $Player_lvl -eq 1 ]; then
+        exp_required=100
+    else
+        exp_required=$((100 + (Player_lvl - 2) * 150))
+    fi
+
+    # Check if the player has enough experience
+    if [ $Player_exp -ge $exp_required ]; then
+        Player_exp=$((Player_exp - exp_required))  # Reset experience after level-up
+        level_up 
+    fi
+}
 
 # Environment flags
 Mountains=0
