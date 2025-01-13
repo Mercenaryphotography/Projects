@@ -10,8 +10,8 @@ source ./Sources/combat.txt
 # Game opening loop
 cat Gametitle.txt | while IFS= read -r line; do echo -e "$line" ; done
 while true; do
-    loadgame
     if [ -f save.txt ]; then
+		loadgame
         # If the save.txt file exists, Load the current player's data and proceed directly to the town_menu
         town_menu
         break
@@ -51,7 +51,7 @@ source ./Sources/playerstate.txt
 explore() {
     echo "Debugging Explore function: Checking map flags..."
     echo "Plains: $Plains, Caves: $Caves, Mountains: $Mountains, River: $River, Ruins: $Ruins, Lake: $Lake"
-
+read -n 1 -srp "Hit any key to continue..."
     # Check conditions and display the appropriate menu
     if [[ "$Plains" == "1" ]] && [[ "$Caves" == "0" ]] && [[ "$Mountains" == "0" ]] && [[ "$River" == "0" ]] && [[ "$Ruins" == "0" ]] && [[ "$Lake" == "0" ]]; then
         clear
@@ -115,8 +115,9 @@ Character_info() {
     echo "$name"
 	echo "$Player_class"
 	echo -e "$Gld $Player_lvl"
+	echo -e "Gold $Player_gold "
     echo -e "$G HP $Std $Player_Health"
-    echo -e "$Gld Exp $Std $Player_exp"
+    echo -e "$Gld Exp $Std $Player_exp  Exp required for next level $cy $exp_required $Std"
     echo -e "$R Str $Std $Player_Strength"
     echo -e "$B Def $Std $Player_Defense"
 	echo -e "$Y luck $Std $Player_Luck"
@@ -148,7 +149,8 @@ while true; do
          ./scarletdaughter.sh
       elif [[ "$yn" == "N" || "$yn" == "n" ]]; then
          echo "Goodbye"
-         sleep 1
+		 gettime
+         sleep 2
          exit
       fi
    fi

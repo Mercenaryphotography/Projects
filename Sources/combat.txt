@@ -2,6 +2,11 @@
 
 # Base attack function for player
 get_damage_user() {
+#rng to hit area sets the zone and monster sets their own luck 
+tohit=$((RANDOM % 100 + Player_luck))
+tomiss=$((zone + Monster_luck))
+if [ $tohit -ge $tomiss ] ; then
+
     dmg=$((RANDOM % ${#player_damages[@]})) 
     damage=${player_damages[$dmg]} 
     
@@ -14,12 +19,15 @@ get_damage_user() {
     # Output the damage taken
     echo "You deal $damage damage"
     sleep 2
+else
+	echo "Your opponent dimbly dodges away from your attack"
+fi
 }
 
 # Warriors lifegain attack
 lifesteal() {
     lfslcost=$(( 6 * Player_lvl ))
-    Player_Health=$(( $Player_Health - $lfslcost ))
+    Player_Health=$(( Player_Health - lfslcost ))
 	dmg=$((RANDOM % ${#player_damages[@]})) 
     damage=$((dmg + 10 + Player_Strength))
 
@@ -28,17 +36,36 @@ lifesteal() {
     # Apply the damage to monster and health to player
     Monster_Health=$(( $Monster_Health - $damage ))
     Player_Health=$(( $Player_Health + $lfsldmg ))
-
+	
+	if [ $Player_Health -gt $Player_MaxHealth ]; then
+	Player_Health=$(Player_MaxHealth)
+	fi
+	
     echo "You focus into your primal core and unleash a beastial attack dealing $damage damage and gaining $lfsldmg health."
     sleep 2
 }
 
 # Monster attack
 get_damage_mon() {
-    damage=$((RANDOM % ${#a1[@]} + ($Monster_Strength - $Player_Defense) ))
-	Player_Health=$((Player_Health - $damage))
-	echo "You take $damage damage from the $Mname"
+mon_hit=$((zone + Monster_luck))
+mon_miss=$((zone + Player_luck))
+
+if [ $mon_hit -ge $mon_miss ] ; then
+random_damage=$((RANDOM % (Monster_dmg_max - Monster_dmg_min + 1) + Monster_dmg_min))
+
+final_damage=$((random_damage + Monster_Strength - Player_Defense))
+
+	if [ $final_damage -lt 0 ] ; then # makes sure damage never goes into negative
+	final_damage=0
+	fi
+
+
+	Player_Health=$((Player_Health - final_damage))
+	echo "You take $final_damage damage from the $Mname"
 	sleep 2
+else
+	echo "You dodge out of the way of your enemies attack" 
+fi
 	
 }
 
@@ -49,7 +76,6 @@ fightfightp() {
 
 # array of monsters by location
 monstersp=("Orc" "Kobold" "Boar")
-
 # Randomly select a monster from the monstersp array
 selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
 
@@ -60,33 +86,39 @@ selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
             Monster_Strength=15
 			Monster_Defense=3
             Amon_exp=10
-			a1=4
-			a2=10
+			Monster_dmg_min=5
+			Monster_dmg_max=15
+			Monster_luck=3
             orcimg 
 			battleimg=$Orc1
 			Mname=Orc
+			gp=20
             ;;
         "Kobold")
             Monster_Health=50
             Monster_Strength=10
 			Monster_Defense=0
             Amon_exp=5
-			a1=6
-			a2=8
+			Monster_dmg_min=4
+			Monster_dmg_max=10
+			Monster_luck=5
             koboldimg 
 			battleimg=$Kbd1
 			Mname=Kobold
+			gp=15
             ;;
         "Boar")
             Monster_Health=75
-            Monster_Damage=15
+            Monster_Strength=15
 			Monster_Defense=5
             Amon_exp=8
-			a1=6
-			a2=10
+			Monster_dmg_min=8
+			Monster_dmg_max=18
+			Monster_luck=0
             boarimg 
 			battleimg=$B1
 			Mname=Boar
+			gp=5
             ;;
         *)
             echo "Error: Unknown monster type."
@@ -106,11 +138,14 @@ while true; do
 	   read -p "Choose your action: " action
 		case $action in
         1)  get_damage_user ; if [ $Monster_Health -le 0 ] ; then 
+		Player_gold=$((Player_gold + gp))
 	echo "Monster defeated! you gain $Amon_exp" experience points
+	echo "You find $gp gold on the ground and add it to your purse, New Total is $Player_gold "
 	Player_exp=$((Player_exp + $Amon_exp))
 	sleep 2
 	((battlep--))
 	check_level_up
+	clear
     break
 	fi
 		get_damage_mon ; clear ;;
@@ -120,6 +155,7 @@ while true; do
 	sleep 2
 	((battlep--))
 	check_level_up
+	clear
     break
 	fi ; get_damage_mon ;;
         #3) clear ; def_up ;clear ; get_damage_mon ;;
@@ -219,8 +255,8 @@ selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
             Monster_Strength=45
 			Monster_Defense=15
             Amon_exp=100
-			a1=12
-			a2=15
+			Monster_dmg_min=1200
+			Monster_dmg_max=1600
             orcimg 
 			battleimg=$Orc1
 			Mname=Orc Ravager
@@ -230,8 +266,8 @@ selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
             Monster_Strength=40
 			Monster_Defense=22
             Amon_exp=80
-			a1=10
-			a2=14
+			Monster_dmg_min=1200
+			Monster_dmg_max=1600
             koboldimg 
 			battleimg=$Kbd1
 			Mname=Cave Wolf
@@ -241,8 +277,8 @@ selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
             Monster_Damage=50
 			Monster_Defense=0
             Amon_exp=100
-			a1=20
-			a2=25
+			Monster_dmg_min=1200
+			Monster_dmg_max=1600
             boarimg 
 			battleimg=$B1
 			Mname=Shadow Beast
@@ -288,18 +324,25 @@ selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
 	}
 
 Finalfight() {
+echo "You feel the power of the artifacts surge through you, your stats max out"
+sleep 2
+player_damages=( "100" "200" "300" )
+Player_class=Warrior
+Player_Health=2200
+Player_MaxHealth=2200 #Used for healing to full health
+Player_Strength=1065	#Strength adds to the damage of your weapon
+Player_Defense=413	#Defense subtracts from the enemey damage
+Player_Luck=212 #luck improves critical chance when I implement that but right now it is for running from combat
       #  Witches Stats
             Monster_Health=3000
             Monster_Strength=400
 			Monster_Defense=400
             Amon_exp=100000
-			a1=200
-			a2=300
+			Monster_dmg_min=800
+			Monster_dmg_max=1200
             iceheartimg
-			battleimg=$Ice1
+			battleimg=./Masset/ice1.txt
 			Mname=Iceheart
-       
-    esac
     while true; do
 		clear
 		run=0
@@ -333,4 +376,4 @@ Finalfight() {
 	break
 	fi
     done
-	}
+}

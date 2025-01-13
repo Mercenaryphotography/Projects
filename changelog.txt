@@ -89,3 +89,17 @@ got rid of Monsterstate.txt source. Will just keep the pools in the combat sourc
 fixed explore function for defaulting, if it hits a bad seed number then it will default to battle while the count is still active.
 made a quick track to end game, want to test scaling so I know where the Witch should be at for the final boss fight.
 started creating the menus for each classes ability options. by level 20 each non mage will have 3 abilities and the mage will have 5 spells
+
+=============================================
+Sun 12 Jan 2025 04:44:58 PM EST
+=============================================
+added random chance to hit for monster damage and player damage
+reflowed the explore logic so that else it checks if battle count is higher then 0 if it is start combat, otherwise give all clear mesage
+added gold to monsters and player status for the eventual town and inventory hurdle.
+
+To Do - 1. Finish Location seeds variety, outlines are up now just have to make each unique. Need to make stat events class specific
+		2. Inventory System
+		3. Boss System for discovering new areas instead of just stumpling
+		4. Town with stores and Inn
+		5. NPC system for dialogue
+		5. Balance stats and leveling

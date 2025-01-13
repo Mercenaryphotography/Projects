@@ -31,72 +31,82 @@ combattexts=( ". Suddenly the grass parts to your left and a foe rushes towards 
 combattext=${combattexts[$((RANDOM % ${#combattexts[@]}))]}
 
 plains() {
-whisperps=( "look for the crossroads...." "deep in a ruin...you will find a foe....garlic..." " $name....you are the last hope....please..." " Today is $(date) " " Resting in town is safer then resting in the wild " "Places eventually run out of events, keep unlocking and moving " " Six Artificats keep the Witch alive " " Heart, Cauldron, Amulet, Eyes, Tome.... all required...or death " )
-random_messagep=${whisperps[$((RANDOM % ${#whisperps[@]}))]}
+    whisperps=( "look for the crossroads...." "deep in a ruin...you will find a foe....garlic..." " $name....you are the last hope....please..." " Today is $(date) " " Resting in town is safer than resting in the wild " "Places eventually run out of events, keep unlocking and moving " " Six Artifacts keep the Witch alive " " Heart, Cauldron, Amulet, Eyes, Tome.... all required...or death " )
+    zone=10 # zone sets the base accuracy required for tohit tomiss in player damage
+    random_messagep=${whisperps[$((RANDOM % ${#whisperps[@]}))]}
+    
     # picks which event could trigger
-	seed=$((RANDOM % 10))
-	# Debug seed variable for testing specific events
-	#seed=1
-	# how many battles you can have in an araea
-	battlep=80
-	# Debug tag, comment out once things work.
-	echo $battlep
-	# super rare event, on by default, turns off once it triggers. Might add a date check to reset rare events every few hours/days since last play.
-	superrarep=1
+    seed=$((RANDOM % 10))
+    
+    # how many battles you can have in an area
+    battlep=80
+    
+    # Debug tag, comment out once things work.
+    echo $battlep
+    
+    # super rare event, on by default, turns off once it triggers. Might add a date check to reset rare events every few hours/days since last play.
+    superrarep=1
+
+    # Event conditions
     if [ $seed -eq 0 ] && [ "$Player_Strength" -le "19" ]; then 
         echo "You explore the great plains to the west, you find no trouble, and the trip leaves you feeling healthy and hardy"
         Player_Strength=$((Player_Strength + 2))
     elif [ $seed -eq 1 ] && [ $battlep -gt 0 ]; then
         echo "You slink through the long grass of the great plains $combattext. You ready your weapon."
-		read -n 1 -srp "Hit any key to continue..." 	
+        read -n 1 -srp "Hit any key to continue..." 	
         fightfightp
-		((battlep--))
+        ((battlep--))
     elif [ $seed -eq 2 ] && [ "$potion" == "0" ]; then
         echo "You find a merchant wandering the roads between the mountains and the capital, you offer them an escort and they gladly accept. You are gifted a potion for your troubles"
         potion=1
     elif [ $seed -eq 3 ]; then
-        damage=$(eventdmg)
+        damage=$(eventdmgp)
         echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
         Player_Health=$((Player_Health - $damage))
         echo "you have $Player_Health left"
     elif [ $seed -eq 4 ] && [ "$Mountains" -eq 0 ]; then
         echo "You find a trail leading you towards the mountains"
-		Mountains=1
-	elif [ $seed -eq 5 ] && [ $Player_Luck -lt 10 ]; then
-		echo "you are forced off the path by sudden wanderlust and head off into the tall grass, you suddenly emerge"
-		echo "in a clearing the ground a thick field of clover disrupting the golden wild wheat around it."
-		echo -e "After a few moments of meandering about you find a Four Leaf Clover"
-		Player_Luck=$((Player_Luck + 2)) 
-	elif [ $seed -eq 6 ] && [ $Witch_Amulet == missing ]; then
-		echo " You find yourself at a crossroad you've never been to and you have walked these lands a long time"
-		echo " You feel a feeling in your gut and walk to the side of the road finding a shovel"
-		echo " You dig into the first spot that calls to you and unearth a small hempen bag"
-		echo " You find an amulet, bearing the Witch's Sigil."
-		Witch_Amulet=obtained
-	elif [ $seed -eq 7 ] && [ $superrarep -eq 1 ]; then
-		echo "You see the shadow of a gryphon in the sky and dive into the grass for safety, you find yourself nose to nose with a"
-		echo " Grass sprite, they seemed just as shocked as you but their expression changes to a smile"
-		echo -e " $Y Safety on your travels adventurer. $Std and you feel your eyes grow heavy and sleep takes you"
-		Player_MaxHealth=$((Player_MaxHealth + 20 ))
-		Player_Health=$Player_MaxHealth
-		echo -e " You gain $G 20 max hp $Std and all your wounds are healed as you sleep"
-		superrarep=0
-	elif [ $seed -eq 8 ] ; then
-		echo "As you walk the long road between the capital and the mountains trying to once more map these maze like paths "
-		echo -e " you suddenly hear a voice whisper $BB $random_messagep $Std "
-	elif [ $seed -eq 9 ] ; then
-		echo " You feel a chill, as if someone is watching you "
-		echo -e "$BB $random_messagep $Std"
-		echo " Flashes across your mind unbidden "
-fi
-
-# Default battle case if any of the above seed rolls miss
-if [ $battlep -gt 0 ] ; then
-	fightfightp
+        Mountains=1
+    elif [ $seed -eq 5 ] && [ $Player_Luck -lt 10 ]; then
+        echo "you are forced off the path by sudden wanderlust and head off into the tall grass, you suddenly emerge"
+        echo "in a clearing with a thick field of clover disrupting the golden wild wheat around it."
+        echo -e "After a few moments of meandering about, you find a Four Leaf Clover"
+        Player_Luck=$((Player_Luck + 2)) 
+    elif [ $seed -eq 6 ] && [ "$Witch_Amulet" == "missing" ]; then
+        echo "You find yourself at a crossroad you've never been to and you've walked these lands a long time"
+        echo "You feel a feeling in your gut and walk to the side of the road finding a shovel"
+        echo "You dig into the first spot that calls to you and unearth a small hempen bag"
+        echo "You find an amulet, bearing the Witch's Sigil."
+        Witch_Amulet=obtained
+    elif [ $seed -eq 7 ] && [ $superrarep -eq 1 ]; then
+        echo "You see the shadow of a gryphon in the sky and dive into the grass for safety, you find yourself nose to nose with a"
+        echo "Grass sprite, they seemed just as shocked as you but their expression changes to a smile"
+        echo -e " $Y Safety on your travels adventurer. $Std and you feel your eyes grow heavy and sleep takes you"
+        Player_MaxHealth=$((Player_MaxHealth + 20))
+        Player_Health=$Player_MaxHealth
+        echo -e "You gain $G 20 max hp $Std and all your wounds are healed as you sleep"
+        superrarep=0
+    elif [ $seed -eq 8 ]; then
+        echo "As you walk the long road between the capital and the mountains trying to once more map these maze-like paths"
+        echo -e "you suddenly hear a voice whisper $BB $random_messagep $Std"
+    elif [ $seed -eq 9 ]; then
+        echo "You feel a chill, as if someone is watching you"
+        echo -e "$BB $random_messagep $Std"
+        echo "Flashes across your mind unbidden"
+		
 	else
-	echo "The plains have been cleared of all threats, you safely travel among the tall grass."
-fi
+		if [ $battlep -gt 0 ]; then
+        echo "No other events occurred, preparing for battle."
+        fightfightp
+    	else
+        echo "The plains have been cleared of all threats, you safely travel among the tall grass."
+    	fi
+	fi
+
+    # Default battle case if none of the above conditions are met
+    
 }
+
 
 mountains() {
 	#seed=$((RANDOM % 6))
@@ -275,5 +285,3 @@ ruins() {
 		Caves=1
     fi
 }
-
-Finalbattle() {

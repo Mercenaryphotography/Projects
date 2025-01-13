@@ -3,7 +3,9 @@
 savegame(){
 echo name=$name > save.txt
 echo Player_lvl=$Player_lvl >> save.txt
-echo Player_exp=0 >> save.txt #Level ups increase base states depending on the level achieved.
+echo Player_exp=$Player_exp >> save.txt#Level ups increase base states depending on the level achieved.
+echo Player_gold=$Player_gold >> save.txt
+exp_required=$exp_required >> save.txt
 # DESIGN LEVEL SYSTEM
 echo statusp=0 >> save.txt     
 #Is the player Poisoned?
@@ -40,6 +42,8 @@ Witch_Eyes=$Witch_Eyes >> save.txt
 Witch_Book=$Witch_Book >> save.txt
 
 echo " Game saved to $(pwd) "
+sleep 2
+clear
 }
 
 loadgame(){
@@ -81,33 +85,7 @@ loadgame(){
     else
         echo "No save file found, starting a new game with default values."
         
-        # Set default starting values for a new game
-        name="Adventurer"
-        Player_lvl=1
-        Player_exp=0
-        statusp=0
-        potion=0
-        min_dmg=0
-        max_dmg=0
-        Player_class="default"
-        Player_Health=100
-        Player_MaxHealth=100
-        Player_Strength=5
-        Player_Defense=2
-        Player_Luck=0
-        Player_Mana=50
-        Player_Maxmana=50
-        Mountains=0
-        Lake=0
-        Plains=1
-        Ruins=0
-        Caves=0
-        River=0
-        Witch_Amulet=0
-        Witch_Heart=0
-        Witch_Cauldron=0
-        Witch_Eyes=0
-        Witch_Book=0
+       
         
         # Proceed with new game setup or prompt for character name, class, etc.
     fi

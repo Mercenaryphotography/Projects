@@ -62,5 +62,5 @@ done
 }
 
 iceimg() {
-Ice1="./Masset/Ice1.txt"
+Ice1="./Masset/ice1.txt"
 }

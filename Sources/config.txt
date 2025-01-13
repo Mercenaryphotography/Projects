@@ -8,7 +8,31 @@ Gld='\033[0;93m'
 BB='\033[0;90m'
 Std='\033[0m'
 W='\033[0;97m'
+cy='\033[0;96m'
 
+# Timer function
+start_time=$(date +%s)
+
+gettime() {
+current_time=$(date +%s)
+elapsed_time=$((current_time - start_time))
+
+# Convert to hours, minutes, and seconds
+elapsed_hours=$((elapsed_time / 3600))
+elapsed_minutes=$(( (elapsed_time % 3600) / 60 ))
+elapsed_seconds=$((elapsed_time % 60))
+
+if [ $elapsed_hours -lt 1 ] ; then
+elapsed_hours=0
+fi
+
+if [ $elapsed_minutes -lt 1 ] ; then
+elapsed_minutes=0
+fi
+
+# Display the elapsed time
+echo "You have been playing for: $elapsed_hours hours, $elapsed_minutes minutes, $elapsed_seconds seconds."
+}
 titleget=./Gametitle.txt
 menuget=./menus/menu.txt
 menu1=./menus/menust.txt
@@ -31,10 +55,11 @@ fi
         2) clear; Character_info ; ((savecount--)) ;;   # Option 2: Show character info
         3) clear; echo "resting.."; sleep 2; Player_Health=$Player_MaxHealth ;;  # Option 3: Rest and heal
         4) clear; echo "testing damage"; Player_Health=0; sleep 2 ;;  # Option 4: Test damage (set health to 0)
-        5) clear; echo "goodbye"; sleep 2; exit ;;  # Option 5: Exit the game
+        5) clear; echo "goodbye"; gettime ; sleep 2; exit ;;  # Option 5: Exit the game
 		S) clear; savegame ;;
 		D) clear; deletegame ;;
-		X) clear; read -p " Set your EXP " Player_exp ;;
+		X) clear; Player_exp=$((Player_exp + 100)) ; check_level_up ;;
+		FF) clear; Finalfight ;;
         *) clear; echo "Invalid choice" ;;  # Default case for invalid input
     esac
 	shopt -u nocasematch
