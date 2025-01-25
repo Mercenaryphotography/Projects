@@ -1,0 +1,152 @@
+#Font colour
+R='\033[0;31m'   
+G='\033[0;32m'   
+Br='\033[0;33m'   
+B='\033[0;34m'
+P='\033[0;35m'
+Gld='\033[0;93m'
+BB='\033[0;90m'
+Std='\033[0m'
+W='\033[0;97m'
+cy='\033[0;96m'
+iStd='\033[3m'
+
+# Timer function
+start_time=$(date +%s)
+
+gettime() {
+current_time=$(date +%s)
+elapsed_time=$((current_time - start_time))
+
+# Convert to hours, minutes, and seconds
+elapsed_hours=$((elapsed_time / 3600))
+elapsed_minutes=$(( (elapsed_time % 3600) / 60 ))
+elapsed_seconds=$((elapsed_time % 60))
+
+if [ $elapsed_hours -lt 1 ] ; then
+elapsed_hours=0
+fi
+
+if [ $elapsed_minutes -lt 1 ] ; then
+elapsed_minutes=0
+fi
+
+# Display the elapsed time
+echo "You have been playing for: $elapsed_hours hours, $elapsed_minutes minutes, $elapsed_seconds seconds."
+}
+titleget=./Gametitle.txt
+menuget=./menus/menu.txt
+menu1=./menus/menust.txt
+menu2=./menus/menuc.txt
+# count for showing how to save instructions
+savecount=20
+Essa() {
+if [ $essalv -lt 0 ]; then
+	echo "Hello stranger, rooms are 2 gold a night"
+elif [ $essalv -ge 0 ] && [ $essalv -le 20]; then
+	echo "Hello friend, rooms are always avaible, few adventurers these days"
+elif [ $essalv -ge 21 ] && [ $essalv -le 40]; then
+	echo "Hey $name"
+fi
+inn
+}
+
+#Inn function
+inn() {
+if [ $savecount -gt 0 ] ; then
+echo -e " $cy Use "S" to save your game. Use "D" to delete your save. $Std "
+else
+echo -e $G HP $Std "$Player_Health"
+fi
+    cat ./menus/menuinn.txt
+	echo
+	shopt -s nocasematch #Turns off case sensitivity for selection of action
+    read -p "Choose an action: " action
+    case $action in # All functions load in main script
+        1) clear; Essa ;;
+        2) clear; if [ $Player_gold -ge 2 ] ; then
+		echo "resting.."
+		sleep 2
+		Player_Health=$Player_MaxHealth
+		Player_gold=$((Player_gold - 2))
+		else
+    		echo "not enough gold"
+    		return 
+			fi ;;
+        3) clear; return ;;
+    esac
+	shopt -u nocasematch
+}
+
+# Town Menu functions
+town_menu() {
+    if [ $savecount -gt 0 ]; then
+        echo -e " $cy Use \"S\" to save your game. Use \"D\" to delete your save. $Std "
+    else
+        echo -e "$G HP $Std $Player_Health"
+    fi
+
+    cat ./menus/menutown.txt
+    echo
+    shopt -s nocasematch # Turns off case sensitivity for selection of action
+    read -p "Choose an action: " action
+    case $action in
+        1) clear; inn
+            if [ $savecount -gt 0 ]; then
+                ((savecount--))
+            fi ;;  # Rest up or talk to Essa
+        # 2) clear; armrorer ; ((savecount--)) ;;   # Option 2: Show character info
+        # 3) clear; scholar ;;
+        # 4) clear; Hunters_Guild ;;
+        5) clear; explore ;;
+        S) clear; savegame ;;
+        D) clear; deletegame ;;
+        *) clear; echo "Invalid choice" ; clear ; town_menu ;;  # Default case for invalid input
+    esac
+    shopt -u nocasematch
+}
+
+
+explore_menu() {
+savecount=20
+if [ $savecount -gt 0 ] ; then
+echo -e " $B Use "S" to save your game. Use "D" to delete your save. $Std "
+else
+echo -e $G HP $Std "$Player_Health"
+fi
+    cat ./menus/menu.txt
+	echo
+	shopt -s nocasematch #Turns off case sensitivity for selection of action
+    read -p "Choose an action: " action
+    case $action in # All functions load in main script
+        1) clear; town_menu ; ((savecount--)) ;;          # Option 1: Explore the world
+        2) clear; Character_info ; ((savecount--)) ;;   # Option 2: Show character info
+        3) clear; echo "resting.."; sleep 2; Player_Health=$Player_MaxHealth ;;  # Option 3: Rest and heal
+        4) clear; echo "testing damage"; Player_Health=0; sleep 2 ;;  # Option 4: Test damage (set health to 0)
+        5) clear; explore ;; # Option 5; go directly to the explore menu
+		6) clear; echo "goodbye"; gettime ; sleep 2; exit ;;  # Option 6: Exit the game
+		S) clear; savegame ;;
+		D) clear; deletegame ;;
+		X) clear; Player_exp=$((Player_exp + 1000000000000)) ; check_level_up ;; #debug feature for testing levels
+		FF) clear; Finalfight ;; #debug feature for testing final battle
+        *) clear; echo "Invalid choice" ;;  # Default case for invalid input
+    esac
+	shopt -u nocasematch
+}
+
+# Stylized text writer for story beats
+movie_style_echo() {
+    local text="$1"  # The text to display
+    local delay="${2:-0.01}"  # Delay in seconds (default 0.1s)
+    
+    # Loop through each character of the text
+    for (( i=0; i<${#text}; i++ )); do
+        echo -n "${text:$i:1}"  # Print one character without newline
+        sleep $delay  # Wait for a brief moment
+    done
+    echo -e # Print a newline at the end
+}
+# function for press any key so it interferes less with the rest of the code. Was running into some crashes with just free floating commands. Function corrects this.
+press_any_key() {
+    read -n 1 -srp "Hit any key to continue..."
+}

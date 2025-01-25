@@ -1,0 +1,66 @@
+orcimg() {
+    count=0
+# Cat the ascii art, pipe that into a loop that reads each line and inputs it one line at a time into a variable called line, then we
+# Echo -e $line to display the txt files with their ansi codes inbedded
+Orc1="./Masset/o1.txt"
+Orc2="./Masset/o2.txt"
+Orc3="./Masset/o3.txt"
+while [ $count -le 2 ] ; do
+clear
+cat $Orc1 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+clear
+cat $Orc2 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+clear
+cat $Orc3 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+let count++
+done
+}
+
+koboldimg() {
+    count=0
+# Cat the ascii art, pipe that into a loop that reads each line and inputs it one line at a time into a variable called line, then we
+# Echo -e $line to display the txt files with their ansi codes inbedded
+Kbd1="./Masset/k1.txt"
+Kbd2="./Masset/k2.txt"
+Kbd3="./Masset/k3.txt"
+while [ $count -le 2 ] ; do
+clear
+cat $Kbd1 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+clear
+cat $Kbd2 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+clear
+cat $Kbd3 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+let count++
+done
+}
+
+boarimg() {
+    count=0
+# Cat the ascii art, pipe that into a loop that reads each line and inputs it one line at a time into a variable called line, then we
+# Echo -e $line to display the txt files with their ansi codes inbedded
+B1="./Masset/b1.txt"
+B2="./Masset/b2.txt"
+B3="./Masset/b3.txt"
+while [ $count -le 2 ] ; do
+clear
+cat $B1 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+clear
+cat $B2 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+clear
+cat $B3 | while IFS= read -r line; do echo -e "$line" ; done
+sleep 0.25
+let count++
+done
+}
+
+iceimg() {
+Ice1="./Masset/ice1.txt"
+}

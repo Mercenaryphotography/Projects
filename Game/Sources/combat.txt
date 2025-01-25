@@ -1,0 +1,756 @@
+# Combat Functions
+
+# Base attack function for player
+get_damage_user() {
+#rng to hit area sets the zone and monster sets their own luck 
+tohit=$((RANDOM % 100 + Player_luck))
+tomiss=$((zone + Monster_luck))
+if [ $tohit -ge $tomiss ] ; then
+
+    dmg=$((RANDOM % ${#player_damages[@]})) 
+    damage=${player_damages[$dmg]} 
+    
+    # Calculate damage (adding strength, subtracting defense)
+    damage=$((damage + Player_Strength - Monster_Def))  
+    
+    # Apply damage to Monster Health
+    Monster_Health=$((Monster_Health - damage))
+    
+    # Output the damage taken
+    echo "You deal $damage damage"
+    sleep 2
+else
+	echo "Your opponent dimbly dodges away from your attack"
+fi
+}
+
+# Warriors lifegain attack
+lifesteal() {
+    lfslcost=$(( 6 * Player_lvl ))
+    Player_Health=$(( Player_Health - lfslcost ))
+	dmg=$((RANDOM % ${#player_damages[@]})) 
+    damage=$((dmg + 10 + Player_Strength))
+
+    # Calculate lifesteal damage 
+    lfsldmg=$(( $damage /5 ))
+    # Apply the damage to monster and health to player
+    Monster_Health=$(( $Monster_Health - $damage ))
+    Player_Health=$(( $Player_Health + $lfsldmg ))
+	
+	if [ $Player_Health -gt $Player_MaxHealth ]; then
+	Player_Health=$(Player_MaxHealth)
+	fi
+	
+    echo "You focus into your primal core and unleash a beastial attack dealing $damage damage and gaining $lfsldmg health."
+    sleep 2
+}
+
+# Monster attack
+get_damage_mon() {
+mon_hit=$((zone + Monster_luck))
+mon_miss=$((zone + Player_luck))
+
+if [ $mon_hit -ge $mon_miss ] ; then
+random_damage=$((RANDOM % (Monster_dmg_max - Monster_dmg_min + 1) + Monster_dmg_min))
+
+final_damage=$((random_damage + Monster_Strength - Player_Defense))
+
+	if [ $final_damage -lt 0 ] ; then # makes sure damage never goes into negative
+	final_damage=0
+	fi
+
+
+	Player_Health=$((Player_Health - final_damage))
+	echo "You take $final_damage damage from the $Mname"
+	sleep 2
+else
+	echo "You dodge out of the way of your enemies attack" 
+fi
+	
+}
+
+source ./Sources/masset.txt
+# Fight function for "plain" monsters
+fightfightp() {
+# Load Monster Image
+
+# array of monsters by location
+monstersp=("Orc" "Kobold" "Boar")
+# Randomly select a monster from the monstersp array
+selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
+
+    # Set stats based on the selected monster
+    case $selected_monster in
+        "Orc")
+            Monster_Health=100
+            Monster_Strength=15
+			Monster_Defense=3
+            Amon_exp=25
+			Monster_dmg_min=5
+			Monster_dmg_max=15
+			Monster_luck=3
+            orcimg 
+			battleimg=$Orc1
+			Mname=Orc
+			gp=20
+            ;;
+        "Kobold")
+            Monster_Health=50
+            Monster_Strength=10
+			Monster_Defense=0
+            Amon_exp=15
+			Monster_dmg_min=4
+			Monster_dmg_max=10
+			Monster_luck=5
+            koboldimg 
+			battleimg=$Kbd1
+			Mname=Kobold
+			gp=15
+            ;;
+        "Boar")
+            Monster_Health=75
+            Monster_Strength=15
+			Monster_Defense=5
+            Amon_exp=20
+			Monster_dmg_min=8
+			Monster_dmg_max=18
+			Monster_luck=0
+            boarimg 
+			battleimg=$B1
+			Mname=Boar
+			gp=5
+            ;;
+        *)
+            echo "Error: Unknown monster type."
+            return
+            ;;
+    esac
+while true; do
+        clear
+        run=$((RANDOM % 10 + 1 - $Player_Luck))
+        cat "$battleimg" | while IFS= read -r line; do echo -e "$line"; done
+        echo "Player Health: $Player_Health, $Mname Health: $Monster_Health"
+        cat $menu2
+        echo
+        
+        read -p "Choose your action: " action
+        case $action in
+            1) get_damage_user
+                if [ $Monster_Health -le 0 ]; then
+                    Player_gold=$((Player_gold + gp))
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    echo "You find $gp gold on the ground and add it to your purse, New Total is $Player_gold"
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battlep--))
+                    check_level_up
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            2) if [ $Player_class == "Warrior" ]; then lifesteal; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "Cutthroat" ]; then backstab; fi
+                if [ $Monster_Health -le 0 ]; then
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battlep--))
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            4) clear; coward ;;
+            *) clear; echo "Invalid choice" ;;
+        esac
+        
+        if [ $Player_Health -lt 1 ]; then
+           gameover
+        fi
+    done
+}
+
+# Fight function for "mountain" monsters
+fightfightm() {
+    monstersp=("Orc Ranger" "Wolf" "Shrieker")
+    selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
+    
+    # Set stats based on the selected monster
+    case $selected_monster in
+        "Orc Ranger")
+            Monster_Health=200
+            Monster_Strength=25
+            Monster_Defense=13
+            Amon_exp=30
+            Monster_dmg_min=5
+            Monster_dmg_max=15
+            Monster_luck=3
+            orcimg
+            battleimg=$Orc1
+            Mname="Orc Ranger"
+            gp=20
+            ;;
+        "Wolf")
+            Monster_Health=200
+            Monster_Strength=25
+            Monster_Defense=13
+            Amon_exp=30
+            Monster_dmg_min=5
+            Monster_dmg_max=15
+            Monster_luck=3
+            orcimg
+            battleimg=$Orc1
+            Mname="Wolf"
+            gp=20
+            ;;
+        "Shrieker")
+            Monster_Health=250
+            Monster_Damage=50
+            Monster_Defense=5
+            Amon_exp=20
+            Monster_dmg_min=5
+            Monster_dmg_max=8
+            boarimg
+            battleimg=$B1
+            Mname="Shrieker"
+            gp=25
+            ;;
+        *)
+            echo "Error: Unknown monster type."
+            return
+            ;;
+    esac
+    
+    # Combat loop
+    while true; do
+        clear
+        run=$((RANDOM % 10 + 1 - $Player_Luck))
+        cat "$battleimg" | while IFS= read -r line; do echo -e "$line"; done
+        echo "Player Health: $Player_Health, $Mname Health: $Monster_Health"
+        cat $menu2
+        echo
+        
+        read -p "Choose your action: " action
+        case $action in
+            1) get_damage_user
+                if [ $Monster_Health -le 0 ]; then
+                    Player_gold=$((Player_gold + gp))
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    echo "You find $gp gold on the ground and add it to your purse, New Total is $Player_gold"
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battlem--))
+                    check_level_up
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            2) if [ $Player_class == "Warrior" ]; then lifesteal; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "Cutthroat" ]; then backstab; fi
+                if [ $Monster_Health -le 0 ]; then
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battlem--))
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            4) clear; coward ;;
+            *) clear; echo "Invalid choice" ;;
+        esac
+        
+        if [ $Player_Health -lt 1 ]; then
+            break
+        fi
+    done
+}
+
+# Fight function for "cave" monsters
+fightfightc() {
+    monstersp=("Orc Ravager" "Cave Wolf" "Shadow Beast")
+    selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
+    
+    # Set stats based on the selected monster
+    case $selected_monster in
+        "Orc Ravager")
+            Monster_Health=300
+            Monster_Strength=45
+            Monster_Defense=15
+            Amon_exp=100
+            Monster_dmg_min=1200
+            Monster_dmg_max=1600
+            orcimg
+            battleimg=$Orc1
+            Mname="Orc Ravager"
+            gp=100
+            ;;
+        "Cave Wolf")
+            Monster_Health=120
+            Monster_Strength=40
+            Monster_Defense=22
+            Amon_exp=80
+            Monster_dmg_min=1200
+            Monster_dmg_max=1600
+            koboldimg
+            battleimg=$Kbd1
+            Mname="Cave Wolf"
+            gp=50
+            ;;
+        "Shadow Beast")
+            Monster_Health=250
+            Monster_Strength=50
+            Monster_Defense=0
+            Amon_exp=100
+            Monster_dmg_min=1200
+            Monster_dmg_max=1600
+            boarimg
+            battleimg=$B1
+            Mname="Shadow Beast"
+            gp=70
+            ;;
+        *)
+            echo "Error: Unknown monster type."
+            return
+            ;;
+    esac
+    
+    # Combat loop
+    while true; do
+        clear
+        run=$((RANDOM % 10 + 1 - $Player_Luck))
+        cat "$battleimg" | while IFS= read -r line; do echo -e "$line"; done
+        echo "Player Health: $Player_Health, $Mname Health: $Monster_Health"
+        cat $menu2
+        echo
+        
+        read -p "Choose your action: " action
+        case $action in
+            1) get_damage_user
+                if [ $Monster_Health -le 0 ]; then
+                    Player_gold=$((Player_gold + gp))
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    echo "You find $gp gold on the ground and add it to your purse, New Total is $Player_gold"
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battlec--))
+                    check_level_up
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            2) if [ $Player_class == "Warrior" ]; then lifesteal; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "Cutthroat" ]; then backstab; fi
+                if [ $Monster_Health -le 0 ]; then
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battlec--))
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            4) clear; coward ;;
+            *) clear; echo "Invalid choice" ;;
+        esac
+        
+        if [ $Player_Health -lt 1 ]; then
+            break
+        fi
+    done
+}
+
+# Fight function for "river" monsters
+fightfightr() {
+    monstersp=("Scarlet Scarred Orc" "Scarlet Scarred Wolf" "Scarlet Scarred Boar")
+    selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
+    
+    # Set stats based on the selected monster
+    case $selected_monster in
+        "Scarlet Scarred Orc")
+            Monster_Health=450
+            Monster_Strength=60
+            Monster_Defense=30
+            Amon_exp=190
+            Monster_dmg_min=1200
+            Monster_dmg_max=1600
+            orcimg
+            battleimg=$Orc1
+            Mname="Scarlet Scarred Orc"
+            gp=150
+            ;;
+        "Scarlet Scarred Wolf")
+            Monster_Health=120
+            Monster_Strength=40
+            Monster_Defense=22
+            Amon_exp=80
+            Monster_dmg_min=1200
+            Monster_dmg_max=1600
+            koboldimg
+            battleimg=$Kbd1
+            Mname="Scarlet Scarred Wolf"
+            gp=100
+            ;;
+        "Scarlet Scarred Boar")
+            Monster_Health=250
+            Monster_Strength=50
+            Monster_Defense=0
+            Amon_exp=100
+            Monster_dmg_min=1200
+            Monster_dmg_max=1600
+            boarimg
+            battleimg=$B1
+            Mname="Scarlet Scarred Boar"
+            gp=120
+            ;;
+        *)
+            echo "Error: Unknown monster type."
+            return
+            ;;
+    esac
+    
+    # Combat loop
+    while true; do
+        clear
+        run=$((RANDOM % 10 + 1 - $Player_Luck))
+        cat "$battleimg" | while IFS= read -r line; do echo -e "$line"; done
+        echo "Player Health: $Player_Health, $Mname Health: $Monster_Health"
+        cat $menu2
+        echo
+        
+        read -p "Choose your action: " action
+        case $action in
+            1) get_damage_user
+                if [ $Monster_Health -le 0 ]; then
+                    Player_gold=$((Player_gold + gp))
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    echo "You find $gp gold on the ground and add it to your purse, New Total is $Player_gold"
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battler--))
+                    check_level_up
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            2) if [ $Player_class == "Warrior" ]; then lifesteal; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "Cutthroat" ]; then backstab; fi
+                if [ $Monster_Health -le 0 ]; then
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battler--))
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            4) clear; coward ;;
+            *) clear; echo "Invalid choice" ;;
+        esac
+        
+        if [ $Player_Health -lt 1 ]; then
+            break
+        fi
+    done
+}
+
+# Placeholder fight function for "lake" monsters
+fightfightl() {
+    monstersp=("Monster A" "Monster B" "Monster C")
+    selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
+    
+    # Set stats based on the selected monster (blank for you to fill)
+    case $selected_monster in
+        "Monster A")
+            Monster_Health=
+            Monster_Strength=
+            Monster_Defense=
+            Amon_exp=
+            Monster_dmg_min=
+            Monster_dmg_max=
+            battleimg=
+            Mname="Monster A"
+            gp=
+            ;;
+        "Monster B")
+            Monster_Health=
+            Monster_Strength=
+            Monster_Defense=
+            Amon_exp=
+            Monster_dmg_min=
+            Monster_dmg_max=
+            battleimg=
+            Mname="Monster B"
+            gp=
+            ;;
+        "Monster C")
+            Monster_Health=
+            Monster_Strength=
+            Monster_Defense=
+            Amon_exp=
+            Monster_dmg_min=
+            Monster_dmg_max=
+            battleimg=
+            Mname="Monster C"
+            gp=
+            ;;
+        *)
+            echo "Error: Unknown monster type."
+            return
+            ;;
+    esac
+
+    # Combat loop
+    while true; do
+        clear
+        run=$((RANDOM % 10 + 1 - $Player_Luck))
+        cat "$battleimg" | while IFS= read -r line; do echo -e "$line"; done
+        echo "Player Health: $Player_Health, $Mname Health: $Monster_Health"
+        cat $menu2
+        echo
+        
+        read -p "Choose your action: " action
+        case $action in
+            1) get_damage_user
+                if [ $Monster_Health -le 0 ]; then
+                    Player_gold=$((Player_gold + gp))
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    echo "You find $gp gold on the ground and add it to your purse, New Total is $Player_gold"
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battlel--))
+                    check_level_up
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            2) if [ $Player_class == "Warrior" ]; then lifesteal; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "Cutthroat" ]; then backstab; fi
+                if [ $Monster_Health -le 0 ]; then
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battlep--))
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            4) clear; coward ;;
+            *) clear; echo "Invalid choice" ;;
+        esac
+        
+        if [ $Player_Health -lt 1 ]; then
+            break
+        fi
+    done
+}
+
+# Placeholder fight function for "ruins" monsters
+fightfightru() {
+    monstersp=("Scarlet Cultist High Priest" "Scarlet Cultist Guard" "Scarlet ")
+    selected_monster=${monstersp[$((RANDOM % ${#monstersp[@]}))]}
+    
+    # Set stats based on the selected monster (blank for you to fill)
+    case $selected_monster in
+        "Scarlet Cultist High Priest")
+            Monster_Health=
+            Monster_Strength=
+            Monster_Defense=
+            Amon_exp=
+            Monster_dmg_min=
+            Monster_dmg_max=
+            battleimg=
+            Mname="Monster 1"
+            gp=
+            ;;
+        "Monster 2")
+            Monster_Health=
+            Monster_Strength=
+            Monster_Defense=
+            Amon_exp=
+            Monster_dmg_min=
+            Monster_dmg_max=
+            battleimg=
+            Mname="Monster 2"
+            gp=
+            ;;
+        "Monster 3")
+            Monster_Health=
+            Monster_Strength=
+            Monster_Defense=
+            Amon_exp=
+            Monster_dmg_min=
+            Monster_dmg_max=
+            battleimg=
+            Mname="Monster 3"
+            gp=
+            ;;
+        *)
+            echo "Error: Unknown monster type."
+            return
+            ;;
+    esac
+
+    # Combat loop
+    while true; do
+        clear
+        run=$((RANDOM % 10 + 1 - $Player_Luck))
+        cat "$battleimg" | while IFS= read -r line; do echo -e "$line"; done
+        echo "Player Health: $Player_Health, $Mname Health: $Monster_Health"
+        cat $menu2
+        echo
+        
+        read -p "Choose your action: " action
+        case $action in
+            1) get_damage_user
+                if [ $Monster_Health -le 0 ]; then
+                    Player_gold=$((Player_gold + gp))
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    echo "You find $gp gold on the ground and add it to your purse, New Total is $Player_gold"
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battleru--))
+                    check_level_up
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            2) if [ $Player_class == "Warrior" ]; then lifesteal; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "Cutthroat" ]; then backstab; fi
+                if [ $Monster_Health -le 0 ]; then
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battleru--))
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            4) clear; coward ;;
+            *) clear; echo "Invalid choice" ;;
+        esac
+        
+        if [ $Player_Health -lt 1 ]; then
+            break
+        fi
+    done
+}
+
+# Final Fight test fight real final fight function is called Scarletfight
+Finalfight() {
+echo "You feel the power of the artifacts surge through you, your stats max out"
+sleep 2
+player_damages=( "100" "200" "300" )
+Player_class=Warrior
+Player_Health=2200
+Player_MaxHealth=2200 #Used for healing to full health
+Player_Strength=1065	#Strength adds to the damage of your weapon
+Player_Defense=413	#Defense subtracts from the enemey damage
+Player_Luck=212 #luck improves critical chance when I implement that but right now it is for running from combat
+      #  Witches Stats
+            Monster_Health=3000
+            Monster_Strength=400
+			Monster_Defense=400
+            Amon_exp=100000
+			Monster_dmg_min=800
+			Monster_dmg_max=1200
+            iceheartimg
+			battleimg=./Masset/ice1.txt
+			Mname=Iceheart
+    while true; do
+		clear
+		run=0
+       cat "$battleimg" | while IFS= read -r line; do echo -e "$line" ; done
+        echo "Player Health: $Player_Health, Monster Health: $Monster_Health"
+        cat $menu2
+		echo
+	   read -p "Choose your action: " action
+		case $action in
+        1)  get_damage_user ; if [ $Monster_Health -le 0 ] ; then 
+	echo "Monster defeated! you gain $Amon_exp" experience points
+	Endgame
+	fi
+		get_damage_mon ; clear ;;
+        2)  if [ $Player_class == "Warrior" ] ; then  lifesteal ; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "cutthroat" ]; then backstap; fi ; if [ $Monster_Health -le 0 ] ; then
+	Endgame
+	fi ; get_damage_mon ;;
+        #3) clear ; def_up ;clear ; get_damage_mon ;;
+        4) clear; coward ;;
+        *) clear ; echo "Invalid choice" ;;
+    esac
+	if [ $Player_Health -lt 1 ] ; then
+	break
+	fi
+    done
+}
+
+taunts=( "The Witch's Daughter leers at you $iStd This is the champion they sent? $Std" "test case 2" " test case 3")
+
+Scarletfight() {
+      #  Witches Stats
+            SMonster_Health=3000
+            Monster_Strength=400
+			Monster_Defense=1200
+            Amon_exp=100000
+			Monster_dmg_min=800
+			Monster_dmg_max=1200
+            iceheartimg
+			battleimg=./Masset/scarlet1.txt
+			Mname=Iceheart
+    while true; do
+        clear
+        run=$((RANDOM % 10 + 1 -  $Player_Luck))
+        cat "$battleimg" | while IFS= read -r line; do echo -e "$line"; done
+        echo "Player Health: $Player_Health, Monster Health: $Monster_Health"
+        cat $menu2
+        echo
+        
+        read -p "Choose your action: " action
+        case $action in
+            1) get_damage_user ; echo -e "$Taunt" ;
+                if [ $SMonster_Health -le 0 ]; then
+                    Endgame
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            2) if [ $Player_class == "Warrior" ]; then lifesteal; elif [ $Player_class == "Mage" ]; then fireball; elif [ $Player_class == "Cutthroat" ]; then backstab; fi
+                if [ $Monster_Health -le 0 ]; then
+                    echo "Monster defeated! You gain $Amon_exp experience points."
+                    Player_exp=$((Player_exp + $Amon_exp))
+                    sleep 2
+                    ((battle--))
+                    clear
+                    break
+                fi
+                get_damage_mon
+                clear
+                ;;
+            4) clear; coward ;;
+            *) clear; echo "Invalid choice" ;;
+        esac
+        
+        if [ $Player_Health -lt 1 ]; then
+            break
+        fi
+    done
+}
