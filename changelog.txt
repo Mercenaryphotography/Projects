@@ -94,12 +94,47 @@ started creating the menus for each classes ability options. by level 20 each no
 Sun 12 Jan 2025 04:44:58 PM EST
 =============================================
 added random chance to hit for monster damage and player damage
-reflowed the explore logic so that else it checks if battle count is higher then 0 if it is start combat, otherwise give all clear mesage
+reflowed the explore logic so that also it checks if battle count is higher then 0 if it is start combat, otherwise give all clear mesage
 added gold to monsters and player status for the eventual town and inventory hurdle.
 
 To Do - 1. Finish Location seeds variety, outlines are up now just have to make each unique. Need to make stat events class specific
 		2. Inventory System
-		3. Boss System for discovering new areas instead of just stumpling
+		3. Boss System for discovering new areas instead of just stumbling
 		4. Town with stores and Inn
 		5. NPC system for dialogue
-		5. Balance stats and leveling
+		6. Balance stats and leveling
+		
+=============================================
+Wed 15 Jan 2025 09:08:27 PM EST
+=============================================
+made exp required say MAX when at level 20
+
+=============================================
+Sun 19 Jan 2025 03:34:53 PM EST
+=============================================
+Added Town Menu and Function
+added the Inn and the first npc ESSA
+updated playerstate and saveload with more inventory objects
+added an opening story option before create a character.
+
+=============================================
+Fri 24 Jan 2025 02:41:27 PM EST
+=============================================
+addedd unique combattext for each area
+added combats for each area, need to balance the stats
+addedd combat text for each area
+addedd all the key items to world events, final fight is now possible
+game enters Alpha Version 0.1
+found a better image to ansi generator at https://dom111.github.io/image-to-ansi/ 
+
+=============================================
+Sat 25 Jan 2025 01:10:12 PM EST
+=============================================
+finished the menus for explore up to the Final Confrontation
+
+To Do - 1. Extend and round out seeds, outlines fully realised just need to add unique events and some variaty
+	    2. Inventory System (X)
+	    3. Boss System for discovering new areas
+	    4. Finish Town
+	    5. Finish NPC System
+	    6. Balance stats and leveling

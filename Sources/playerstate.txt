@@ -5,9 +5,16 @@ Player_lvl=1
 Player_exp=0 #Level ups increase base states depending on the level achieved.
 Player_gold=0
 exp_required=100
-statusp=0       
-#Is the player Poisoned?
-potion=0		
+statusp=0       #Is the player Poisoned?
+
+# Inventory
+potion=0 # Potions full heal
+dkey=0 # Dungeon Keys open locked chests
+Gold_feather=0 #max luck up
+silver_berry=0 #max hp up
+emerald_potion=0 #max str up
+antidote=0 #cures poison condition
+
 #Does the player have a potion on them (can only hold 1)
 
 # Warrior
@@ -18,7 +25,7 @@ Player_Health=100
 Player_MaxHealth=100 #Used for healing to full health
 Player_Strength=15	#Strength adds to the damage of your weapon
 Player_Defense=10	#Defense subtracts from the enemey damage
-Player_Luck=2 #luck improves to-hit chance when I implement that but right now it is for running from combat
+Player_Luck=2 #luck improves to-hit chance and for running from combat
 
 # Mage
 elif [ $class_weapon == "Staff" ] ; then
@@ -90,6 +97,7 @@ check_level_up() {
         else
             exp_required=$((100 + (Player_lvl - 2) * 150))
         fi
+		# set the level cap at 20 
 	if [ $Player_lvl -le 19 ] ; then
         # Check if the player has enough experience to level up
         if [ $Player_exp -ge $exp_required ]; then
@@ -99,6 +107,7 @@ check_level_up() {
             break  # Exit the loop if the player doesn't have enough experience for the next level
         fi
 	else
+	exp_required=MAX
 		echo "You have reached the peak of your abilities, seek out boons if you need further boosts" 
 	sleep 2
 	break
@@ -121,3 +130,6 @@ Witch_Heart=missing
 Witch_Cauldron=missing
 Witch_Eyes=missing
 Witch_Book=missing
+
+#NPC Flags
+essalv="-15"

@@ -7,12 +7,15 @@ echo Player_exp=$Player_exp >> save.txt#Level ups increase base states depending
 echo Player_gold=$Player_gold >> save.txt
 exp_required=$exp_required >> save.txt
 # DESIGN LEVEL SYSTEM
-echo statusp=0 >> save.txt     
+echo statusp=$statusp >> save.txt     
 #Is the player Poisoned?
-echo potion=0 >> save.txt	
+echo potion=$potion >> save.txt
+echo dkey=$dkey >> save.txt
+echo Gold_feather=$Gold_feather >> save.txt
+echo silver_berry=$silver_berry >> save.txt
+echo emerald_potion=$emerald_potion >> save.txt
 #Does the player have a potion on them (can only hold 1)
-echo min_dmg=3 >> save.txt
-echo max_dmg=5 >> save.txt
+echo Player_damages=$Player_damages >> save.txt
 echo Player_class=$Player_class >> save.txt
 echo Player_Health=$Player_Health >> save.txt
 echo Player_MaxHealth=$Player_MaxHealth >> save.txt
@@ -40,6 +43,9 @@ Witch_Heart=$Witch_Heart >> save.txt
 Witch_Cauldron=$Witch_Cauldron >> save.txt
 Witch_Eyes=$Witch_Eyes >> save.txt
 Witch_Book=$Witch_Book >> save.txt
+
+#NPC Flags
+echo $essalv >> save.txt
 
 echo " Game saved to $(pwd) "
 sleep 2
@@ -77,6 +83,11 @@ loadgame(){
                 "Witch_Cauldron") Witch_Cauldron=$value ;;
                 "Witch_Eyes") Witch_Eyes=$value ;;
                 "Witch_Book") Witch_Book=$value ;;
+                "Essa") Essa=$value ;;  # Added Essa
+                "essalv") essalv=$value ;;  # Added essalv
+                "Gold_feather") Gold_feather=$value ;;  # Added Gold_feather
+                "silver_berry") silver_berry=$value ;;  # Added silver_berry
+                "emerald_potion") emerald_potion=$value ;;  # Added emerald_potion
             esac
         done < save.txt
         
@@ -85,11 +96,10 @@ loadgame(){
     else
         echo "No save file found, starting a new game with default values."
         
-       
-        
         # Proceed with new game setup or prompt for character name, class, etc.
     fi
 }
+
 
 
 deletegame() {

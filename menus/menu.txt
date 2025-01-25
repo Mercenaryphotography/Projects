@@ -1,9 +1,10 @@
  "--=---=---=---=---=---=---="
- "     Adventuer awaits      "
+ "     Playter State         "
  "--=---=---=---=---=---=---="
- 		1) Explore
- 		2) Status   	   
+ 		1) Town
+ 		2) Character Sheet 	   
  		3) Rest     		 
  		4) Inventroy(set to instant kill for testing)	 
- 		5) Exit              
+ 		5) Explore  
+		6) Quit Game
  "--=---=---=---=---=---=---="

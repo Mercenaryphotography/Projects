@@ -25,10 +25,17 @@ eventdmgru() {
 	echo $((RANDOM % 100 + 1 ))
 	}
 
+# how many battles you can have in an area
+    battlep=80
+	battlem=80
+	battlec=80
+	battler=80
+	battlel=80
+	battleru=80
+	
+combattextps=( "Suddenly the grass parts to your left and a foe rushes towards you " "You feel like a sixth sense sudden danger and turn to face a foe" "you sneak up on some unaware figure hidden in the grass" )
 
-combattexts=( ". Suddenly the grass parts to your left and a foe rushes towards you " "You feel like a sixth sense sudden danger and turn to face a foe" "you sneak up on some unaware figure hidden in the grass" )
-
-combattext=${combattexts[$((RANDOM % ${#combattexts[@]}))]}
+combattextp=${combattextps[$((RANDOM % ${#combattextps[@]}))]}
 
 plains() {
     whisperps=( "look for the crossroads...." "deep in a ruin...you will find a foe....garlic..." " $name....you are the last hope....please..." " Today is $(date) " " Resting in town is safer than resting in the wild " "Places eventually run out of events, keep unlocking and moving " " Six Artifacts keep the Witch alive " " Heart, Cauldron, Amulet, Eyes, Tome.... all required...or death " )
@@ -38,8 +45,7 @@ plains() {
     # picks which event could trigger
     seed=$((RANDOM % 10))
     
-    # how many battles you can have in an area
-    battlep=80
+    
     
     # Debug tag, comment out once things work.
     echo $battlep
@@ -51,33 +57,47 @@ plains() {
     if [ $seed -eq 0 ] && [ "$Player_Strength" -le "19" ]; then 
         echo "You explore the great plains to the west, you find no trouble, and the trip leaves you feeling healthy and hardy"
         Player_Strength=$((Player_Strength + 2))
+		press_any_key
+		explore
     elif [ $seed -eq 1 ] && [ $battlep -gt 0 ]; then
-        echo "You slink through the long grass of the great plains $combattext. You ready your weapon."
-        read -n 1 -srp "Hit any key to continue..." 	
+        echo "You slink through the long grass of the great plains $combattextp. You ready your weapon."
+        press_any_key 	
         fightfightp
         ((battlep--))
+		press_any_key 
+		explore
     elif [ $seed -eq 2 ] && [ "$potion" == "0" ]; then
         echo "You find a merchant wandering the roads between the mountains and the capital, you offer them an escort and they gladly accept. You are gifted a potion for your troubles"
         potion=1
+		press_any_key 
+		explore
     elif [ $seed -eq 3 ]; then
         damage=$(eventdmgp)
         echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
         Player_Health=$((Player_Health - $damage))
         echo "you have $Player_Health left"
+		press_any_key 
+		explore
     elif [ $seed -eq 4 ] && [ "$Mountains" -eq 0 ]; then
         echo "You find a trail leading you towards the mountains"
         Mountains=1
+		press_any_key 
+		explore
     elif [ $seed -eq 5 ] && [ $Player_Luck -lt 10 ]; then
         echo "you are forced off the path by sudden wanderlust and head off into the tall grass, you suddenly emerge"
         echo "in a clearing with a thick field of clover disrupting the golden wild wheat around it."
         echo -e "After a few moments of meandering about, you find a Four Leaf Clover"
-        Player_Luck=$((Player_Luck + 2)) 
+        Player_Luck=$((Player_Luck + 2))
+		press_any_key 
+		explore
     elif [ $seed -eq 6 ] && [ "$Witch_Amulet" == "missing" ]; then
         echo "You find yourself at a crossroad you've never been to and you've walked these lands a long time"
         echo "You feel a feeling in your gut and walk to the side of the road finding a shovel"
         echo "You dig into the first spot that calls to you and unearth a small hempen bag"
         echo "You find an amulet, bearing the Witch's Sigil."
         Witch_Amulet=obtained
+		press_any_key 
+		explore
     elif [ $seed -eq 7 ] && [ $superrarep -eq 1 ]; then
         echo "You see the shadow of a gryphon in the sky and dive into the grass for safety, you find yourself nose to nose with a"
         echo "Grass sprite, they seemed just as shocked as you but their expression changes to a smile"
@@ -86,20 +106,35 @@ plains() {
         Player_Health=$Player_MaxHealth
         echo -e "You gain $G 20 max hp $Std and all your wounds are healed as you sleep"
         superrarep=0
+		press_any_key 
+		explore
     elif [ $seed -eq 8 ]; then
         echo "As you walk the long road between the capital and the mountains trying to once more map these maze-like paths"
         echo -e "you suddenly hear a voice whisper $BB $random_messagep $Std"
+		press_any_key 
+		explore
     elif [ $seed -eq 9 ]; then
         echo "You feel a chill, as if someone is watching you"
         echo -e "$BB $random_messagep $Std"
         echo "Flashes across your mind unbidden"
-		
+		press_any_key 
+		explore
+	elif [ $seed -eq 10 ] && [ $Witch_Amulet == obtained ]; then
+		echo "You meet a women on the road, tall a fierce her eyes sparkle with intellegience."
+		echo -e "$cy It is a bold fool who wears a tool of power such as that so freely $Std "
+		echo "She waves her hands placatingly showing no weapons and revealing she lacked the tattoos of a spellcaster"
+		echo -e "$cy I mearly mean to warn you, if you seek the Witch she resides past the mountains in the ruins of the old Emperors"
+		echo -e "castle, you must follow the mountain passes and seek the hidden path to the lake of rot$Std"
+
 	else
 		if [ $battlep -gt 0 ]; then
-        echo "No other events occurred, preparing for battle."
+        echo "$combattextp"
         fightfightp
+		explore
     	else
         echo "The plains have been cleared of all threats, you safely travel among the tall grass."
+		press_any_key 
+		explore
     	fi
 	fi
 
@@ -107,11 +142,15 @@ plains() {
     
 }
 
+combattextms=( "A sudden cry from above shakes you from your thoughts and a shadow descends. " "You feel like a sixth sense sudden danger and turn to face a foe" "you hear movement around the bend of the path you walk, you ready your weapon" )
+
+combattextm=${combattextms[$((RANDOM % ${#combattextms[@]}))]}
 
 mountains() {
+	echo $battlem
 	#seed=$((RANDOM % 6))
 	seed=5
-	battlem=80
+	zone=20
 	superrarem=true
 	if [ $seed -eq 0 ] && [ $Player_Strength -le 25 ]; then
 	echo "You find yourself caught in a sudden storm, you hold on for dear life as torrential waters pour off the rocks and turn the path's into"
@@ -119,35 +158,53 @@ mountains() {
 	Player_Strength=$((Player_Strength + 2))
 	elif [ $seed -eq 1 ]; then
         echo "You hear the faint cries of a something in the among the rocky cliffs. You ready your weapon."
-		read -n 1 -srp "Hit any key to continue..." 	
+		press_any_key 	
        fightfightm
+	   press_any_key 
+		explore
     elif [ $seed -eq 2 ]; then
         echo "You are suddenly fall into a ravine, thakfully the gravel gives to soft sand though you do take some damage"
         potion=1
+		press_any_key 
+		explore
     elif [ $seed -eq 3 ]; then
         damage=$(eventdmg)
         echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
         Player_Health=$((Player_Health - $damage))
         echo "you have $Player_Health left"
+		press_any_key 
+		explore
     elif [ $seed -eq 4 ] && [ "$Caves" == "0" ]; then
         echo "By chance you spot an odd outcrop of stone, checking it you discover a cave entrance, you do some initial spelunking and mark the cave for further exploration"
 		Caves=1
+		press_any_key 
+		explore
 	elif [ $seed -eq 5 ] && [ "$Witch_Heart" == missing ] ; then
 	echo "Witch Heart found"
 	Witch_Heart=obtained
+	press_any_key 
+		explore
     fi
 	
 	if [ $battlem -gt 0 ] ; then
-	fightfight m
+	fightfightm
+	press_any_key 
+		explore
 	else
 	echo "The mountains have been cleared of all threats, you safely travel among the high passes."
+	press_any_key 
+		explore
 fi
 }
+
+combattextcs=( "Suddenly a pool to your right bubbles and surges and a foe rushes foward" "You feel like a sixth sense sudden danger and turn to face a foe" "you sneak up on some unaware figure hidden in the darkness" )
+
+combattextc=${combattextcs[$((RANDOM % ${#combattextcs[@]}))]}
 
 caves() {
 	#seed=$((RANDOM % 6))
 	seed=5
-	battlec=80
+	zone=30
 	if [ $seed -eq 0 ] && [ $Player_Strenght -lt "35" ]; then
 	echo "Your torch splutters out in a sudden splash of wind and water surges from a passage. You are surprised to feel no fear, instead your just working on the problem"
 	echo "In the dark you start to back track as you attempt to rid your fuel of moisture keeping a hand on the wall where you have been marking your progress with carvings and rope"
@@ -156,20 +213,28 @@ caves() {
 	echo " You feel a surge of power rush through you, your wounds are healed and you feel much stronger then before"
 	Player_Strength=35
 	elif [ $seed -eq 1 ]; then
-        echo "You hear the faint cries of a shadowbeast. You ready your weapon."
-		read -n 1 -srp "Hit any key to continue..." 	
+        echo "$combattextc"
+		press_any_key 	
        fightfightc
+	   press_any_key 
+		explore
     elif [ $seed -eq 2 ]; then
         echo "You find a merchant wandering the roads between the mountains and the capital, you offer them an escort and they gladly accept. You are gifted a potion for your troubles"
         potion=1
+		press_any_key 
+		explore
     elif [ $seed -eq 3 ]; then
         damage=$(eventdmg)
         echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
         Player_Health=$((Player_Health - $damage))
         echo "you have $Player_Health left"
-    elif [ $seed -eq 4 ] && [ "$Caves" == "0" ]; then
+		press_any_key 
+		explore
+    elif [ $seed -eq 4 ] && [ "$River" == "0" ]; then
         echo "By chance you spot an odd outcrop of stone, checking it you discover a cave entrance, you do some initial spelunking and mark the cave for further exploration"
-		Caves=1
+		River=1
+		press_any_key 
+		explore
 	elif [ $seed -eq 6 ] && [ $Witch_Cauldron == missing ] ; then
 	echo "You hear chanting off deep in the shadows " | pv -lq 10
 	echo "carefully you make your way through the twisting caverns following the noise."
@@ -178,14 +243,24 @@ caves() {
 	echo "creeping along the high ledge you pass through a cutting in the ceiling into a new room"
 	echo "you are stunned to see the brass cauldron you've heard of only in story, but here it is, the witch's cauldron hidden far above the heads of those below who seek it"
 	Witch_cauldron=obtained
-    fi
+    press_any_key 
+		explore
+	fi
 
 if [ $battlec -gt 0 ] ; then
 	fightfightc
+	press_any_key 
+		explore
 	else
 	echo "The caves have been cleared of all threats, you safely travel among the lantern lit passages hearing busy workers expanding the networks all around."
+	press_any_key 
+		explore
 fi
 }
+
+combattextrs=( "Suddenly the grass parts to your left and a foe rushes towards you " "You feel like a sixth sense sudden danger and turn to face a foe" "you sneak up on some unaware figure hidden in the grass" )
+
+combattextr=${combattextrs[$((RANDOM % ${#combattextrs[@]}))]}
 
 river() {
 	seed=$((RANDOM % 5))
@@ -199,28 +274,42 @@ river() {
 	echo " You feel a surge of power rush through you, your wounds are healed and you feel much stronger then before"
 	Player_Strength=35
 	elif [ $seed -eq 1 ]; then
-        echo "You hear the faint cries of a shadowbeast. You ready your weapon."
-		read -n 1 -srp "Hit any key to continue..." 	
-       fightfightc
+        echo "$combattextr"
+		press_any_key 	
+       fightfightr
+	   press_any_key 
+		explore
     elif [ $seed -eq 2 ]; then
         echo "You find a merchant wandering the roads between the mountains and the capital, you offer them an escort and they gladly accept. You are gifted a potion for your troubles"
         potion=1
+		press_any_key 
+		explore
     elif [ $seed -eq 3 ]; then
         damage=$(eventdmg)
         echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
         Player_Health=$((Player_Health - $damage))
         echo "you have $Player_Health left"
-    elif [ $seed -eq 4 ] && [ "$Caves" == "0" ]; then
-        echo "By chance you spot an odd outcrop of stone, checking it you discover a cave entrance, you do some initial spelunking and mark the cave for further exploration"
-		Caves=1
+		press_any_key 
+		explore
+    elif [ $seed -eq 4 ] && [ "$Lake" == "0" ]; then
+        echo "You find the end of the river finally, it opens into a grand lake, the crystal clear waters show you ruins deep below, now to find a way to breath underwater."
+		Lake=1
+	elif [ $seed -eq 5 ] && [ "$Witch_Eyes" == missing ]; then
+		echo "You suddenly spot a small jar floating in the reeds, you grab it and are distubred to find it contains a pair of humanoid eyeballs."
+		echo "Your heart skips a beat though when you notice that while they float in Scarely ichor, the eyes themselves are not infected by it, could these be the Witche's Eyes?"
+		Witch_Eyes=obtained
     fi
 	
 if [ $battler -gt 0 ] ; then
 	fightfightr
 	else
-	echo "The plains have been cleared of all threats, you safely travel among the tall grass."
+	echo "The River has been cleared of all threats, you safely travel among the tall reeds waving at fishing boats as they pass."
 fi
 }
+
+combattextls=( "Suddenly the grass parts to your right and a foe rushes towards you " "You feel like a sixth sense sudden danger and turn to face a foe"  "you sneak up on some unaware figure hidden in the weeds near the water" )
+
+combattextl=${combattextls[$((RANDOM % ${#combattextls[@]}))]}
 
 lake() {
 	#seed=$((RANDOM % 5))
@@ -234,9 +323,9 @@ lake() {
 	echo " You feel a surge of power rush through you, your wounds are healed and you feel much stronger then before"
 	Player_Strength=35
 	elif [ $seed -eq 1 ]; then
-        echo "You hear the faint cries of a shadowbeast. You ready your weapon."
-		read -n 1 -srp "Hit any key to continue..." 	
-       fightfightc
+        echo "$combatextl"
+		press_any_key 	
+       fightfightl
     elif [ $seed -eq 2 ]; then
         echo "You find a merchant wandering the roads between the mountains and the capital, you offer them an escort and they gladly accept. You are gifted a potion for your troubles"
         potion=1
@@ -245,9 +334,15 @@ lake() {
         echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
         Player_Health=$((Player_Health - $damage))
         echo "you have $Player_Health left"
-    elif [ $seed -eq 4 ] && [ "$Caves" == "0" ]; then
-        echo "By chance you spot an odd outcrop of stone, checking it you discover a cave entrance, you do some initial spelunking and mark the cave for further exploration"
-		Caves=1
+    elif [ $seed -eq 4 ] && [ "$Ruins" == "0" ] && [ "$Witch_Book" == obtained ]; then
+        echo "You find the passage spoken of in the book"
+		Ruins=1
+	elif [ $seed -eq 5 ] && [ $Witch_Book == missing ]; then
+		echo "You enter a small traders hut setup near the main road that runs through the valley"
+		echo "nothing of any real interest, then a suspiciously read book jumps out at you, you pick it up and the merchan scoffs"
+		echo "You can have it friend, that book just drinks ink, anything you write in it disapears after a day, no magic can return it"
+		echo "You glance through the pages and are surprised to find you can read everything written within."
+		Witch_Book=obtained
     fi
 
 if [ $battler -gt 0 ] ; then
@@ -256,6 +351,10 @@ if [ $battler -gt 0 ] ; then
 	echo "The lake has been cleared of all threats, you safely swim the waters."
 fi
 }
+
+combattextrus=( "You rush towards a waiting foe, fear deep in their eyes " "You enter a room and find a cultist unaware, you rush them." "you sneak up on some unaware figure guarding a door, you ready your weapon" )
+
+combattextru=${combattextrus[$((RANDOM % ${#combattextrus[@]}))]}
 
 ruins() {
 	seed=$((RANDOM % 5))
@@ -269,9 +368,9 @@ ruins() {
 	echo " You feel a surge of power rush through you, your wounds are healed and you feel much stronger then before"
 	Player_Strength=35
 	elif [ $seed -eq 1 ]; then
-        echo "You hear the faint cries of a shadowbeast. You ready your weapon."
-		read -n 1 -srp "Hit any key to continue..." 	
-       fightfightc
+        echo "$combattextru"
+		press_any_key 	
+       fightfightru
     elif [ $seed -eq 2 ]; then
         echo "You find a merchant wandering the roads between the mountains and the capital, you offer them an escort and they gladly accept. You are gifted a potion for your troubles"
         potion=1
@@ -280,8 +379,8 @@ ruins() {
         echo "you get lost, you have a hard time navigating the tall grass that gets ten feet tall in some patches of the golden plains. You suffer $damage damage"
         Player_Health=$((Player_Health - $damage))
         echo "you have $Player_Health left"
-    elif [ $seed -eq 4 ] && [ "$Caves" == "0" ]; then
+    elif [ $seed -eq 4 ] && [ "$FinalFight" == "0" ]; then
         echo "By chance you spot an odd outcrop of stone, checking it you discover a cave entrance, you do some initial spelunking and mark the cave for further exploration"
-		Caves=1
+		FinalFight=1
     fi
 }
